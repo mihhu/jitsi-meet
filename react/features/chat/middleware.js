@@ -17,6 +17,8 @@ import {
 } from '../base/participants';
 import { MiddlewareRegistry, StateListenerRegistry } from '../base/redux';
 import { playSound, registerSound, unregisterSound } from '../base/sounds';
+import { addGif } from '../gifs/actions';
+import { isGifMessage } from '../gifs/functions';
 import { resetNbUnreadPollsMessages } from '../polls/actions';
 import { ADD_REACTION_MESSAGE } from '../reactions/actionTypes';
 import { pushReactions } from '../reactions/actions.any';
@@ -215,6 +217,9 @@ function _addChatMsgListener(conference, store) {
     conference.on(
         JitsiConferenceEvents.MESSAGE_RECEIVED,
         (id, message, timestamp) => {
+            if (isGifMessage(message)) {
+                _handleGifMessageReceived(store, id, message);
+            }
             _handleReceivedMessage(store, {
                 id,
                 message,
@@ -227,6 +232,9 @@ function _addChatMsgListener(conference, store) {
     conference.on(
         JitsiConferenceEvents.PRIVATE_MESSAGE_RECEIVED,
         (id, message, timestamp) => {
+            if (isGifMessage(message)) {
+                _handleGifMessageReceived(store, id, message);
+            }
             _handleReceivedMessage(store, {
                 id,
                 message,
@@ -267,6 +275,20 @@ function _addChatMsgListener(conference, store) {
         JitsiConferenceEvents.CONFERENCE_ERROR, (errorType, error) => {
             errorType === JitsiConferenceErrors.CHAT_ERROR && _handleChatError(store, error);
         });
+}
+
+/**
+ * Handles a received gif message.
+ *
+ * @param {Object} store - Redux store.
+ * @param {string} id - Id of the participant that sent the message.
+ * @param {stirng} message - The message sent.
+ * @returns {void}
+ */
+function _handleGifMessageReceived(store, id, message) {
+    const url = message.substring(4, message.length - 1);
+
+    store.dispatch(addGif(id, url));
 }
 
 /**

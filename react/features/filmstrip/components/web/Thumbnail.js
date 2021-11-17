@@ -1,5 +1,6 @@
 // @flow
 
+import { withStyles } from '@material-ui/styles';
 import React, { Component } from 'react';
 
 import { createScreenSharingIssueEvent, sendAnalytics } from '../../../analytics';
@@ -26,6 +27,8 @@ import {
 import { ConnectionIndicator } from '../../../connection-indicator';
 import { DisplayName } from '../../../display-name';
 import { StatusIndicators, RaisedHandIndicator, DominantSpeakerIndicator } from '../../../filmstrip';
+import { hideGif, showGif } from '../../../gifs/actions';
+import { getGifForParticipant } from '../../../gifs/functions';
 import { PresenceLabel } from '../../../presence-status';
 import { getCurrentLayout, LAYOUTS } from '../../../video-layout';
 import { LocalVideoMenuTriggerButton, RemoteVideoMenuTriggerButton } from '../../../video-menu';
@@ -215,9 +218,19 @@ export type Props = {|
     _width: number,
 
     /**
+     * An object containing CSS classes.
+     */
+    classes: Object,
+
+    /**
      * The redux dispatch function.
      */
     dispatch: Function,
+
+    /**
+     * URL of GIF sent by this participant, null if there's none.
+     */
+    gifSrc?: string,
 
     /**
      * The horizontal offset in px for the thumbnail. Used to center the thumbnails from the last row in tile view.
@@ -246,6 +259,28 @@ function onClick(event) {
     // needs to be stopped.
     event.stopPropagation();
 }
+
+const defaultStyles = () => {
+    return {
+        gif: {
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            zIndex: 99,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'hidden',
+
+            '& img': {
+                maxWidth: '100%',
+                maxHeight: '100%',
+                objectFit: 'contain',
+                flexGrow: '1'
+            }
+        }
+    };
+};
 
 /**
  * Implements a thumbnail.
@@ -307,6 +342,8 @@ class Thumbnail extends Component<Props, State> {
         this._onTouchMove = this._onTouchMove.bind(this);
         this._showPopover = this._showPopover.bind(this);
         this._hidePopover = this._hidePopover.bind(this);
+        this._onGifMouseEnter = this._onGifMouseEnter.bind(this);
+        this._onGifMouseLeave = this._onGifMouseLeave.bind(this);
     }
 
     /**
@@ -835,6 +872,52 @@ class Thumbnail extends Component<Props, State> {
         return className;
     }
 
+    _onGifMouseEnter: () => void;
+
+    /**
+     * Keep showing the GIF for the current participant.
+     *
+     * @returns {void}
+     */
+    _onGifMouseEnter() {
+        const { dispatch, participantID } = this.props;
+
+        dispatch(showGif(participantID));
+    }
+
+    _onGifMouseLeave: () => void;
+
+    /**
+     * Keep showing the GIF for the current participant.
+     *
+     * @returns {void}
+     */
+    _onGifMouseLeave() {
+        const { dispatch, participantID } = this.props;
+
+        dispatch(hideGif(participantID));
+    }
+
+    /**
+     * Renders GIF.
+     *
+     * @returns {Component}
+     */
+    _renderGif() {
+        const { gifSrc, classes } = this.props;
+
+        return gifSrc && (
+            <div
+                className = { classes.gif }
+                onMouseEnter = { this._onGifMouseEnter }
+                onMouseLeave = { this._onGifMouseLeave }>
+                <img
+                    alt = 'GIF'
+                    src = { gifSrc } />
+            </div>
+        );
+    }
+
     /**
      * Renders the local participant's thumbnail.
      *
@@ -850,7 +933,8 @@ class Thumbnail extends Component<Props, State> {
             _isScreenSharing,
             _localFlipX,
             _participant,
-            _videoTrack
+            _videoTrack,
+            gifSrc
         } = this.props;
         const { id } = _participant || {};
         const { audioLevel } = this.state;
@@ -883,11 +967,13 @@ class Thumbnail extends Component<Props, State> {
                 style = { styles.thumbnail }>
                 <div className = 'videocontainer__background' />
                 <span id = 'localVideoWrapper'>
-                    <VideoTrack
-                        className = { videoTrackClassName }
-                        id = 'localVideo_container'
-                        style = { styles.video }
-                        videoTrack = { _videoTrack } />
+                    {!gifSrc && (
+                        <VideoTrack
+                            className = { videoTrackClassName }
+                            id = 'localVideo_container'
+                            style = { styles.video }
+                            videoTrack = { _videoTrack } />
+                    )}
                 </span>
                 <div className = 'videocontainer__toolbar'>
                     <StatusIndicators participantID = { id } />
@@ -905,7 +991,7 @@ class Thumbnail extends Component<Props, State> {
                     { this._renderTopIndicators() }
                 </div>
                 <div className = 'videocontainer__hoverOverlay' />
-                { this._renderAvatar(styles.avatar) }
+                { !gifSrc && this._renderAvatar(styles.avatar) }
                 <span className = 'audioindicator-container'>
                     <AudioLevelIndicator audioLevel = { audioLevel } />
                 </span>
@@ -915,7 +1001,7 @@ class Thumbnail extends Component<Props, State> {
                         popoverVisible = { this.state.popoverVisible }
                         showPopover = { this._showPopover } />
                 </span>
-
+                {this._renderGif()}
             </span>
         );
     }
@@ -971,7 +1057,8 @@ class Thumbnail extends Component<Props, State> {
             _participant,
             _startSilent,
             _videoTrack,
-            _volume = 1
+            _volume = 1,
+            gifSrc
         } = this.props;
         const { id } = _participant;
         const { audioLevel } = this.state;
@@ -1010,7 +1097,7 @@ class Thumbnail extends Component<Props, State> {
                 ) }
                 style = { styles.thumbnail }>
                 {
-                    _videoTrack && <VideoTrack
+                    !gifSrc && _videoTrack && <VideoTrack
                         eventHandlers = { videoEventListeners }
                         id = { `remoteVideo_${videoTrackId || ''}` }
                         muted = { true }
@@ -1030,7 +1117,7 @@ class Thumbnail extends Component<Props, State> {
                     </div>
                 </div>
                 <div className = 'videocontainer__hoverOverlay' />
-                { this._renderAvatar(styles.avatar) }
+                { !gifSrc && this._renderAvatar(styles.avatar) }
                 <div className = 'presence-label-container'>
                     <PresenceLabel
                         className = 'presence-label'
@@ -1048,6 +1135,7 @@ class Thumbnail extends Component<Props, State> {
                         popoverVisible = { this.state.popoverVisible }
                         showPopover = { this._showPopover } />
                 </span>
+                {this._renderGif()}
             </span>
         );
     }
@@ -1167,6 +1255,8 @@ function _mapStateToProps(state, ownProps): Object {
     }
     }
 
+    const { gifUrl: gifSrc } = getGifForParticipant(state, id);
+
     return {
         _allowEditing: !isNameReadOnly(state),
         _audioTrack,
@@ -1193,8 +1283,9 @@ function _mapStateToProps(state, ownProps): Object {
         _startSilent: Boolean(startSilent),
         _videoTrack,
         _volume: isLocal ? undefined : id ? participantsVolume[id] : undefined,
-        ...size
+        ...size,
+        gifSrc
     };
 }
 
-export default connect(_mapStateToProps)(Thumbnail);
+export default connect(_mapStateToProps)(withStyles(defaultStyles)(Thumbnail));

@@ -5,9 +5,11 @@ import { toArray } from 'react-emoji-render';
 
 import { translate } from '../../../base/i18n';
 import { Linkify } from '../../../base/react';
+import { isGifMessage } from '../../../gifs/functions';
 import { MESSAGE_TYPE_LOCAL } from '../../constants';
 import AbstractChatMessage, { type Props } from '../AbstractChatMessage';
 
+import GifMessage from './GifMessage';
 import PrivateMessageButton from './PrivateMessageButton';
 
 /**
@@ -33,7 +35,14 @@ class ChatMessage extends AbstractChatMessage<Props> {
         const content = [];
 
         for (const token of tokens) {
-            if (token.includes('://')) {
+            // check if the message is a GIF
+            if (isGifMessage(token)) {
+                const url = token.substring(4, token.length - 1);
+
+                processedMessage.push(<GifMessage
+                    key = { url }
+                    url = { url } />);
+            } else if (token.includes('://')) {
                 // It contains a link, bypass the emojification.
                 content.push(token);
             } else {
