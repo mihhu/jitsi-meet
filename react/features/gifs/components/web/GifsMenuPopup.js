@@ -1,8 +1,9 @@
 // @flow
-import InlineDialog from '@atlaskit/inline-dialog';
 import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import { useSelector } from 'react-redux';
+
+import { Popover } from '../../../base/popover';
 
 import { getGifsMenuVisibility } from '../../functions';
 
@@ -48,13 +49,16 @@ function GifsMenuPopup({
 
     return (
         <div className = { styles.popup }>
-            <InlineDialog
+            <Popover
+                clickOnlyDisplay = { true }
                 content = { <GifsMenu handleClick = { handleClick } /> }
-                isOpen = { isOpen }
-                onClose = { handleClick }
-                placement = 'top'>
+                id = 'gifs-menu-trigger'
+                onPopoverClose = { handleClick }
+                onPopoverOpen = { handleClick }
+                position = 'top'
+                visible = { isOpen }>
                 {children}
-            </InlineDialog>
+            </Popover>
         </div>
     );
 }

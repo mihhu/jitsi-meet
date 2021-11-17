@@ -55,14 +55,7 @@ type Props = {
 const useStyles = makeStyles(() => {
     return {
         gifsMenu: {
-            // width: '280px',
-            // background: theme.palette.ui02,
-            // boxShadow: '0px 3px 16px rgba(0, 0, 0, 0.6), 0px 0px 4px 1px rgba(0, 0, 0, 0.25)',
-            // borderRadius: '3px',
-            // padding: '16px'
-        },
-        gridContainer: {
-            // overflow: 'auto'
+            width: '400px'
         },
         searchField: {
             backgroundColor: 'white',
@@ -134,21 +127,19 @@ function GifsMenu({
 
     return (
         <div className = { styles.gifsMenu }>
-            <div className = { styles.gridContainer }>
-                <Carousel
-                    fetchGifs = { fetchGifs }
-                    gifHeight = { 200 }
-                    gutter = { 5 }
-                    hideAttribution = { true }
-                    key = { searchKey }
-                    onGifClick = { handleGifClick } />
-                <InputField
-                    autoFocus = { true }
-                    className = { styles.searchField }
-                    onChange = { handleSearchKeyChange }
-                    placeHolder = { t('gifs.search') }
-                    testId = 'gifSearch.nameField' />
-            </div>
+            <Carousel
+                fetchGifs = { fetchGifs }
+                gifHeight = { 200 }
+                gutter = { 5 }
+                hideAttribution = { true }
+                key = { searchKey }
+                onGifClick = { handleGifClick } />
+            <InputField
+                autoFocus = { true }
+                className = { styles.searchField }
+                onChange = { handleSearchKeyChange }
+                placeHolder = { t('gifs.search') }
+                testId = 'gifSearch.key' />
         </div>
     );
 }

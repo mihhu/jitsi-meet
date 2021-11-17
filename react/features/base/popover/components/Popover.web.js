@@ -18,6 +18,11 @@ type Props = {
     children: React$Node,
 
     /**
+     * Whether to show/hide on both hover and click events or only on click events
+     */
+    clickOnlyDisplay: boolean,
+
+    /**
      * Additional CSS classnames to apply to the root of the {@code Popover}
      * component.
      */
@@ -159,7 +164,7 @@ class Popover extends Component<Props, State> {
      * @returns {ReactElement}
      */
     render() {
-        const { children, className, content, id, overflowDrawer, visible } = this.props;
+        const { children, clickOnlyDisplay, className, content, id, overflowDrawer, visible } = this.props;
 
         if (overflowDrawer) {
             return (
@@ -185,8 +190,8 @@ class Popover extends Component<Props, State> {
                 id = { id }
                 onClick = { this._onThumbClick }
                 onKeyPress = { this._onKeyPress }
-                onMouseEnter = { this._onShowDialog }
-                onMouseLeave = { this._onHideDialog }
+                onMouseEnter = { !clickOnlyDisplay && this._onShowDialog }
+                onMouseLeave = { !clickOnlyDisplay && this._onHideDialog }
                 ref = { this._containerRef }>
                 { visible && (
                     <DialogPortal
