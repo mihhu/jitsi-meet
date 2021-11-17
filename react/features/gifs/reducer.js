@@ -1,10 +1,16 @@
 
 import { ReducerRegistry } from '../base/redux';
 
-import { ADD_GIF_FOR_PARTICIPANT, HIDE_GIF_FOR_PARTICIPANT, REMOVE_GIF_FOR_PARTICIPANT } from './actionTypes';
+import {
+    ADD_GIF_FOR_PARTICIPANT,
+    HIDE_GIF_FOR_PARTICIPANT,
+    REMOVE_GIF_FOR_PARTICIPANT,
+    TOGGLE_GIFS_VISIBLE
+} from './actionTypes';
 
 const initialState = {
-    gifList: new Map()
+    gifList: new Map(),
+    visible: false
 };
 
 ReducerRegistry.register(
@@ -45,7 +51,13 @@ ReducerRegistry.register(
                 gifList: newList
             };
         }
+        case TOGGLE_GIFS_VISIBLE:
+            return {
+                ...state,
+                visible: !state.visible
+            };
         }
 
         return state;
     });
+

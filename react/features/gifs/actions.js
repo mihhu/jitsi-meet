@@ -2,7 +2,8 @@ import {
     ADD_GIF_FOR_PARTICIPANT,
     HIDE_GIF_FOR_PARTICIPANT,
     REMOVE_GIF_FOR_PARTICIPANT,
-    SHOW_GIF_FOR_PARTICIPANT
+    SHOW_GIF_FOR_PARTICIPANT,
+    TOGGLE_GIFS_VISIBLE
 } from './actionTypes';
 
 /**
@@ -56,5 +57,16 @@ export function hideGif(participantId) {
     return {
         type: HIDE_GIF_FOR_PARTICIPANT,
         participantId
+    };
+}
+
+/**
+ * Toggles the visibility of the gifs menu.
+ *
+ * @returns {Object}
+ */
+export function toggleGifsMenuVisibility() {
+    return {
+        type: TOGGLE_GIFS_VISIBLE
     };
 }

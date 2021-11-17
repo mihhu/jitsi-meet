@@ -408,6 +408,9 @@
         "veryGood": "Very Good",
         "star": "Star"
     },
+    "gifs": {
+        "search": "Press to search"
+    },
     "incomingCall": {
         "answer": "Answer",
         "audioCallTitle": "Incoming call",
@@ -888,6 +891,7 @@
             "embedMeeting": "Embed meeting",
             "feedback": "Leave feedback",
             "fullScreen": "Toggle full screen",
+            "gifs": "Send gifs",
             "grantModerator": "Grant Moderator Rights",
             "hangup": "Leave the meeting",
             "help": "Help",
@@ -959,6 +963,7 @@
         "exitFullScreen": "Exit full screen",
         "exitTileView": "Exit tile view",
         "feedback": "Leave feedback",
+        "gifs": "Send gifs",
         "hangup": "Leave the meeting",
         "help": "Help",
         "invite": "Invite people",

@@ -1,4 +1,3 @@
-
 /**
  * Adds a gif for a given participant.
  * {{
@@ -36,3 +35,13 @@ export const SHOW_GIF_FOR_PARTICIPANT = 'SHOW_GIF_FOR_PARTICIPANT';
  * }}
  */
 export const HIDE_GIF_FOR_PARTICIPANT = 'HIDE_GIF_FOR_PARTICIPANT';
+
+/**
+ * The type of the (redux) action which shows/hides the gifs menu.
+ *
+ * {{
+ *     type: TOGGLE_GIFS_VISIBLE,
+ *     visible: boolean
+ * }}
+ */
+export const TOGGLE_GIFS_VISIBLE = 'TOGGLE_GIFS_VISIBLE';

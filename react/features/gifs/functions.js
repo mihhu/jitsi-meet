@@ -1,4 +1,3 @@
-
 /**
  * Gets the URL of the GIF for the given participant or null if there's none.
  *
@@ -18,4 +17,26 @@ export function getGifForParticipant(state, participantId) {
  */
 export function isGifMessage(message) {
     return message.trim().startsWith('gif[');
+}
+
+/**
+ * Returns the visibility state of the gifs menu.
+ *
+ * @param {Object} state - The state of the application.
+ * @returns {boolean}
+ */
+export function getGifsMenuVisibility(state) {
+    return state['features/gifs'].visible;
+}
+
+/**
+ * Returns the url of the gif selected in the gifs menu.
+ *
+ * @param {Object} gif - The gif data.
+ * @returns {boolean}
+ */
+export function getGifUrl(gif) {
+    // TODO: switch for the gif api
+    /* eslint-disable camelcase */
+    return gif?.embed_url;
 }

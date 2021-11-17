@@ -30,6 +30,7 @@ import { DominantSpeakerName } from '../../../display-name';
 import { EmbedMeetingButton } from '../../../embed-meeting';
 import { SharedDocumentButton } from '../../../etherpad';
 import { FeedbackButton } from '../../../feedback';
+import GifsMenuButton from '../../../gifs/components/web/GifsMenuButton';
 import { InviteButton } from '../../../invite/components/add-people-dialog';
 import { isVpaasMeeting } from '../../../jaas/functions';
 import { KeyboardShortcutsButton } from '../../../keyboard-shortcuts';
@@ -620,6 +621,12 @@ class Toolbox extends Component<Props> {
             group: 2
         };
 
+        const gifs = {
+            key: 'gifs',
+            Content: GifsMenuButton,
+            group: 2
+        };
+
         const participants = {
             key: 'participants-pane',
             Content: ParticipantsPaneButton,
@@ -775,6 +782,7 @@ class Toolbox extends Component<Props> {
             desktop,
             chat,
             raisehand,
+            gifs,
             participants,
             invite,
             tileview,
