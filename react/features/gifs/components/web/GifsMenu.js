@@ -15,7 +15,7 @@ import InputField from '../../../base/premeeting/components/web/InputField';
 import { connect } from '../../../base/redux';
 import { sendMessage } from '../../../chat/actions.any';
 import { dockToolbox } from '../../../toolbox/actions.web';
-import { getGifUrl } from '../../functions';
+import { formatGifUrlMessage, getGifUrl } from '../../functions';
 
 const TO_EXPORT_API_KEY = 'A4C69dn3EPwkbAZnAujzA9B29ocUKJeC';
 
@@ -124,7 +124,7 @@ function GifsMenu({
         e.preventDefault();
         const url = getGifUrl(gif);
 
-        dispatch(sendMessage(url, true));
+        dispatch(sendMessage(formatGifUrlMessage(url), true));
         handleClick();
     }, [ dispatch ]);
 

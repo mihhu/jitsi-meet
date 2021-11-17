@@ -37,6 +37,20 @@ export function getGifsMenuVisibility(state) {
  */
 export function getGifUrl(gif) {
     // TODO: switch for the gif api
+
+    const idx = gif?.embed_url.lastIndexOf('/');
+    const id = gif?.embed_url.substr(idx + 1);
+
     /* eslint-disable camelcase */
-    return gif?.embed_url;
+    return `https://i.giphy.com/media/${id}/giphy.webp`;
+}
+
+/**
+ * Formats the gif message.
+ *
+ * @param {string} url - GIF url.
+ * @returns {string}
+ */
+export function formatGifUrlMessage(url) {
+    return `gif[${url}]`;
 }
