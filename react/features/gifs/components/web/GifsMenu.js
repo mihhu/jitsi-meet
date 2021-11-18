@@ -106,7 +106,6 @@ function GifsMenu({
         const initGifs = async () => await fetchGifs();
 
         initGifs();
-        console.log(searchKey);
 
         return () => {
             _dockToolbox(false);

@@ -880,9 +880,9 @@ class Thumbnail extends Component<Props, State> {
      * @returns {void}
      */
     _onGifMouseEnter() {
-        const { dispatch, participantID } = this.props;
+        const { dispatch, _participant: { id } } = this.props;
 
-        dispatch(showGif(participantID));
+        dispatch(showGif(id));
     }
 
     _onGifMouseLeave: () => void;
@@ -893,9 +893,9 @@ class Thumbnail extends Component<Props, State> {
      * @returns {void}
      */
     _onGifMouseLeave() {
-        const { dispatch, participantID } = this.props;
+        const { dispatch, _participant: { id } } = this.props;
 
-        dispatch(hideGif(participantID));
+        dispatch(hideGif(id));
     }
 
     /**

@@ -190,8 +190,8 @@ class Popover extends Component<Props, State> {
                 id = { id }
                 onClick = { this._onThumbClick }
                 onKeyPress = { this._onKeyPress }
-                onMouseEnter = { !clickOnlyDisplay && this._onShowDialog }
-                onMouseLeave = { !clickOnlyDisplay && this._onHideDialog }
+                onMouseEnter = { clickOnlyDisplay ? undefined : this._onShowDialog }
+                onMouseLeave = { clickOnlyDisplay ? undefined : this._onHideDialog }
                 ref = { this._containerRef }>
                 { visible && (
                     <DialogPortal
