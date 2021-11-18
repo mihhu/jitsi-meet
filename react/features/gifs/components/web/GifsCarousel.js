@@ -106,7 +106,10 @@ const useStyles = makeStyles(theme => {
         },
 
         carouselDrawer: {
-            height: 'auto'
+            height: 'auto',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center'
         },
 
         imgDrawer: {
