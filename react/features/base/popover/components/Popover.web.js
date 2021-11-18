@@ -135,6 +135,7 @@ class Popover extends Component<Props, State> {
         this._onKeyPress = this._onKeyPress.bind(this);
         this._containerRef = React.createRef();
         this._onEscKey = this._onEscKey.bind(this);
+        this._onWindowClick = this._onWindowClick.bind(this);
         this._onThumbClick = this._onThumbClick.bind(this);
         this._onTouchStart = this._onTouchStart.bind(this);
         this._setContextMenuRef = this._setContextMenuRef.bind(this);
@@ -150,6 +151,7 @@ class Popover extends Component<Props, State> {
      */
     componentDidMount() {
         window.addEventListener('touchstart', this._onTouchStart);
+        window.addEventListener('click', this._onWindowClick);
     }
 
     /**
@@ -160,6 +162,7 @@ class Popover extends Component<Props, State> {
      */
     componentWillUnmount() {
         window.removeEventListener('touchstart', this._onTouchStart);
+        window.removeEventListener('click', this._onWindowClick);
     }
 
     /**
@@ -347,6 +350,21 @@ class Popover extends Component<Props, State> {
             if (this.props.visible) {
                 this._onHideDialog();
             }
+        }
+    }
+
+    _onWindowClick: (Object) => void;
+
+    /**
+     * Click event handler for the window object.
+     *
+     * @param {Object} e - The click event to handle.
+     * @returns {void}
+     */
+    _onWindowClick(e) {
+        if (this._containerRef && !this._containerRef.current.contains(e.target)) {
+            e.stopPropagation();
+            this._onHideDialog();
         }
     }
 

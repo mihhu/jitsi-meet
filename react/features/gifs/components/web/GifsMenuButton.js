@@ -64,7 +64,7 @@ function GifsMenuButton({
     const dispatch = useDispatch();
 
     const handleClick = useCallback(e => {
-        e.stopPropagation();
+        e && e.stopPropagation();
         dispatch(toggleGifsMenuVisibility());
     }, [ dispatch ]);
 

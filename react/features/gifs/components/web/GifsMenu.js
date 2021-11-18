@@ -123,7 +123,7 @@ function GifsMenu({
         const url = getGifUrl(gif);
 
         dispatch(sendMessage(formatGifUrlMessage(url), true));
-        handleClick();
+        handleClick(e);
     }, [ dispatch ]);
 
     const handleSearchKeyChange = useCallback(value => {
