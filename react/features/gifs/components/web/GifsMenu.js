@@ -118,7 +118,7 @@ function GifsMenu({
         _dockToolbox(true);
         const initGifs = async () => {
             await fetchGifs();
-            inputRef.current.focus();
+            inputRef.current && inputRef.current.focus();
         };
 
         initGifs();

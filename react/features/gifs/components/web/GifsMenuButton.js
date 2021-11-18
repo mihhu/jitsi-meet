@@ -18,7 +18,7 @@ declare var APP: Object;
  * @param {Object} props - Component props.
  * @returns {ReactElement}
  */
-function GifsMenuButton(props) {
+function GifsMenuButton(props: Object) {
     const dispatch = useDispatch();
 
     const handleClick = useCallback(e => {

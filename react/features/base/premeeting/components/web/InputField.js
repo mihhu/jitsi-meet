@@ -24,7 +24,7 @@ type Props = {
     /**
      * Input ref.
      */
-    innerRef?: Object,
+    innerRef?: Function,
 
     /**
      * Callback for the onChange event of the field.
@@ -49,7 +49,7 @@ type Props = {
     /**
      * The field type (e.g. Text, password...etc).
      */
-    type: string,
+    type?: string,
 
     /**
      * Externally provided value.
@@ -204,7 +204,7 @@ class InputField extends PureComponent<Props, State> {
     }
 }
 
-export default React.forwardRef((props, ref) => (
+export default React.forwardRef<Props, Function>((props, ref) => (
     <InputField
         innerRef = { ref }
         { ...props } />

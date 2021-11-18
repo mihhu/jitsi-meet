@@ -74,7 +74,7 @@ type Props = {
     /**
      * Used for translation.
      */
-     t: Function
+    t: Function
 };
 
 const gifHeight = 200;
@@ -155,7 +155,11 @@ function GifsCarousel({
             let fetchedGifs = [];
 
             try {
-                fetchedGifs = await paginator.current();
+                if (paginator.current) {
+                    fetchedGifs = await paginator.current();
+                } else {
+                    throw new Error('Missing paginator');
+                }
             } catch (error) {
                 isFetching(false);
             }
@@ -189,38 +193,32 @@ function GifsCarousel({
         onGifClick(gif, e);
     });
 
-    const renderGifsSequence = useCallback(() => {
-        return !loading && gifs.map((gif, index) => {
-            const gifSrc = getGifUrl(gif);
+    const renderGifsSequence = useCallback(() => !loading && gifs.map((gif, index) => {
+        const gifSrc = getGifUrl(gif);
 
-            return (
-                <img
-                    alt = 'GIF'
-                    className = { clsx(styles.img, overflowDrawer && styles.imgDrawer) }
-                    key = { `gifResult-${index}-${gifSrc}` }
-                    onClick = { e => onGifClick(gif, e) }
-                    onKeyDown = { e => handleKeyDown(gif, e) }
-                    src = { gifSrc }
-                    tabIndex = '0' />
-            );
-        });
-    }, [ loading, gifs, onGifClick, handleKeyDown ]);
-
-    const renderLoadingSpinner = useCallback(() => {
-        return loading && (
-            <div className = { styles.spinnerContainer }>
-                <Spinner size = { 'large' } />
-            </div>
+        return (
+            <img
+                alt = 'GIF'
+                className = { clsx(styles.img, overflowDrawer && styles.imgDrawer) }
+                key = { `gifResult-${index}-${gifSrc}` }
+                onClick = { e => onGifClick(gif, e) }
+                onKeyDown = { e => handleKeyDown(gif, e) }
+                src = { gifSrc }
+                tabIndex = '0' />
         );
-    }, [ loading ]);
+    }), [ loading, gifs, onGifClick, handleKeyDown ]);
 
-    const renderNoResults = useCallback(() => {
-        return (!loading && gifs.length === 0) && (
-            <div className = { styles.notFound }>
-                {t('gifs.noResults')}
-            </div>
-        );
-    }, [ loading, gifs, t ]);
+    const renderLoadingSpinner = useCallback(() => loading && (
+        <div className = { styles.spinnerContainer }>
+            <Spinner size = { 'large' } />
+        </div>
+    ), [ loading ]);
+
+    const renderNoResults = useCallback(() => (!loading && gifs.length === 0) && (
+        <div className = { styles.notFound }>
+            {t('gifs.noResults')}
+        </div>
+    ), [ loading, gifs, t ]);
 
     return (
         <div
