@@ -4,7 +4,6 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { Popover } from '../../../base/popover';
-
 import { getGifsMenuVisibility } from '../../functions';
 
 import GifsMenu from './GifsMenu';
@@ -52,6 +51,7 @@ function GifsMenuPopup({
             <Popover
                 clickOnlyDisplay = { true }
                 content = { <GifsMenu handleClick = { handleClick } /> }
+                disableKeypressClose = { true }
                 id = 'gifs-menu-trigger'
                 onPopoverClose = { handleClick }
                 onPopoverOpen = { handleClick }

@@ -18,7 +18,7 @@ type Props = {
     children: React$Node,
 
     /**
-     * Whether to show/hide on both hover and click events or only on click events
+     * Whether to show/hide on both hover and click events or only on click events.
      */
     clickOnlyDisplay: boolean,
 
@@ -32,6 +32,11 @@ type Props = {
      * The ReactElement to display within the dialog.
      */
     content: Object,
+
+    /**
+     * Whether or not to disable close on keypress.
+     */
+    disableKeypressClose?: boolean,
 
     /**
      * Whether displaying of the popover should be prevented.
@@ -84,7 +89,7 @@ type State = {
     /**
      * The style to apply to the context menu in order to position it correctly.
      */
-     contextMenuStyle: Object
+    contextMenuStyle: Object
 };
 
 /**
@@ -313,6 +318,9 @@ class Popover extends Component<Props, State> {
      * @returns {void}
      */
     _onKeyPress(e) {
+        if (this.props.disableKeypressClose) {
+            return;
+        }
         if (e.key === ' ' || e.key === 'Enter') {
             e.preventDefault();
             if (this.props.visible) {
