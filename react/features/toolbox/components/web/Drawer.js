@@ -50,6 +50,7 @@ function Drawer({
      */
     const handleInsideClick = useCallback(event => {
         event.stopPropagation();
+        onClose();
     }, []);
 
     /**

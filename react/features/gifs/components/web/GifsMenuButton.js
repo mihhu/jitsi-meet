@@ -1,6 +1,5 @@
 // @flow
 
-import { makeStyles } from '@material-ui/core';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -13,15 +12,6 @@ import GifsMenuPopup from './GifsMenuPopup';
 
 declare var APP: Object;
 
-const useStyles = makeStyles(() => {
-    return {
-        container: {
-            display: 'inline-block',
-            position: 'relative'
-        }
-    };
-});
-
 /**
  * Button used for the gifs menu.
  *
@@ -29,25 +19,22 @@ const useStyles = makeStyles(() => {
  * @returns {ReactElement}
  */
 function GifsMenuButton(props) {
-
-    const styles = useStyles();
     const dispatch = useDispatch();
-    const overflowDrawer = useSelector(showOverflowDrawer);
 
     const handleClick = useCallback(e => {
         e && e.stopPropagation();
         dispatch(toggleGifsMenuVisibility());
     }, [ dispatch ]);
 
-    return overflowDrawer
-        ? <GifToolbarButton { ...props } />
-        : (
-            <div className = { styles.container }>
-                <GifsMenuPopup handleClick = { handleClick }>
-                    <GifToolbarButton />
-                </GifsMenuPopup>
-            </div>
-        );
+    const overflowDrawer = useSelector(showOverflowDrawer);
+
+    return (
+        <GifsMenuPopup handleClick = { handleClick }>
+            <GifToolbarButton
+                handleClick = { !overflowDrawer && handleClick }
+                { ...props } />
+        </GifsMenuPopup>
+    );
 }
 
 export default GifsMenuButton;

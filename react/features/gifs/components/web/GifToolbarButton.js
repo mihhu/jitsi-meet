@@ -4,7 +4,6 @@ import { translate } from '../../../base/i18n';
 import { IconGifs } from '../../../base/icons';
 import { connect } from '../../../base/redux';
 import { AbstractButton, type AbstractButtonProps } from '../../../base/toolbox/components';
-import { toggleGifsMenuVisibility } from '../../actions';
 import { getGifsMenuVisibility } from '../../functions';
 
 /**
@@ -37,15 +36,13 @@ class GifToolbarButton extends AbstractButton<Props, any> {
      * @returns {void}
      */
     _handleClick() {
-        const { dispatch, handleClick } = this.props;
+        const { handleClick } = this.props;
 
         if (handleClick) {
             handleClick();
 
             return;
         }
-
-        dispatch(toggleGifsMenuVisibility());
     }
 
     /**

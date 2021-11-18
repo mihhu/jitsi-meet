@@ -1,9 +1,11 @@
 // @flow
 import { makeStyles } from '@material-ui/core';
+import clsx from 'clsx';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { Popover } from '../../../base/popover';
+import { showOverflowDrawer } from '../../../toolbox/functions.web';
 import { getGifsMenuVisibility } from '../../functions';
 
 import GifsMenu from './GifsMenu';
@@ -26,6 +28,10 @@ const useStyles = makeStyles(() => {
         popup: {
             display: 'inline-block',
             position: 'relative'
+        },
+
+        drawerButton: {
+            display: 'block'
         }
     };
 });
@@ -45,21 +51,21 @@ function GifsMenuPopup({
     */
     const isOpen = useSelector(state => getGifsMenuVisibility(state));
     const styles = useStyles();
+    const overflowDrawer = useSelector(showOverflowDrawer);
 
     return (
-        <div className = { styles.popup }>
-            <Popover
-                clickOnlyDisplay = { true }
-                content = { <GifsMenu handleClick = { handleClick } /> }
-                disableKeypressClose = { true }
-                id = 'gifs-menu-trigger'
-                onPopoverClose = { handleClick }
-                onPopoverOpen = { handleClick }
-                position = 'top'
-                visible = { isOpen }>
-                {children}
-            </Popover>
-        </div>
+        <Popover
+            className = { clsx(styles.popup, overflowDrawer && styles.drawerButton) }
+            clickOnlyDisplay = { true }
+            content = { <GifsMenu handleClick = { handleClick } /> }
+            disableKeypressClose = { true }
+            id = 'gifs-menu-trigger'
+            onPopoverClose = { handleClick }
+            onPopoverOpen = { handleClick }
+            position = 'top'
+            visible = { isOpen }>
+            {children}
+        </Popover>
     );
 }
 
