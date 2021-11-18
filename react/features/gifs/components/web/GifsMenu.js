@@ -103,7 +103,7 @@ function GifsMenu({
     const fetchGifs = async (offset, key) => {
         const options = {
             rating: 'pg-13',
-            limit: 10,
+            limit: 20,
             offset
         };
 

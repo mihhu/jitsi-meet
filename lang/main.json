@@ -409,7 +409,8 @@
         "star": "Star"
     },
     "gifs": {
-        "search": "Press to search"
+        "search": "Press to search",
+        "noResults": "No results found :("
     },
     "incomingCall": {
         "answer": "Answer",
