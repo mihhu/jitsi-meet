@@ -362,7 +362,7 @@ class Popover extends Component<Props, State> {
      * @returns {void}
      */
     _onWindowClick(e) {
-        if (this._containerRef && !this._containerRef.current.contains(e.target)) {
+        if (this._containerRef.current && !this._containerRef.current.contains(e.target)) {
             e.stopPropagation();
             this._onHideDialog();
         }
