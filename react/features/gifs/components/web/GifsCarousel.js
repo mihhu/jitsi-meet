@@ -42,7 +42,7 @@ function gifPaginator(fetchGifs, initialGifs, searchKey, prevSearchKey) {
 
         return [ ...gifs ];
     };
-};
+}
 
 type Props = {
 

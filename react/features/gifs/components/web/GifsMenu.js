@@ -2,7 +2,6 @@
 
 /* eslint-disable react/jsx-no-bind */
 import { GiphyFetch } from '@giphy/js-fetch-api';
-import { Carousel } from '@giphy/react-components';
 import { makeStyles } from '@material-ui/core';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -16,6 +15,7 @@ import { connect } from '../../../base/redux';
 import { sendMessage } from '../../../chat/actions.any';
 import { dockToolbox } from '../../../toolbox/actions.web';
 import { formatGifUrlMessage, getGifUrl } from '../../functions';
+
 import GifsCarousel from './GifsCarousel';
 
 const TO_EXPORT_API_KEY = 'A4C69dn3EPwkbAZnAujzA9B29ocUKJeC';
@@ -140,13 +140,6 @@ function GifsMenu({
                 placeHolder = { t('gifs.search') }
                 ref = { inputRef }
                 testId = 'gifSearch.key' />
-            {/* <Carousel
-                fetchGifs = { fetchGifs }
-                gifHeight = { 200 }
-                gutter = { 5 }
-                hideAttribution = { true }
-                key = { searchKey }
-                onGifClick = { handleGifClick } /> */}
             <GifsCarousel
                 fetchGifs = { fetchGifs }
                 gifHeight = { 200 }
