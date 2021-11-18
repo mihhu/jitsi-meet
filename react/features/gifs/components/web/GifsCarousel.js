@@ -1,10 +1,13 @@
 // @flow
 
 /* eslint-disable react/jsx-no-bind */
-import { makeStyles } from '@material-ui/core';
 import Spinner from '@atlaskit/spinner';
+import { makeStyles } from '@material-ui/core';
+import clsx from 'clsx';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 
+import { showOverflowDrawer } from '../../../toolbox/functions.web';
 import { getGifUrl } from '../../functions';
 
 /**
@@ -78,13 +81,23 @@ const useStyles = makeStyles(() => {
         },
 
         img: {
-            height: '100%'
+            height: '100%',
+            maxWidth: '100%'
         },
+
         spinnerContainer: {
             height: '100%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
+        },
+
+        carouselDrawer: {
+            height: 'auto'
+        },
+
+        imgDrawer: {
+            maxHeight: `${gifHeight}px`
         }
     };
 });
@@ -105,6 +118,7 @@ function GifsCarousel({
     const paginator = useRef();
     const unmounted = useRef(false);
     const [ prevSearchKey, setPrevSearchKey ] = useState();
+    const overflowDrawer = useSelector(showOverflowDrawer);
 
     const onFetch = useCallback(async () => {
         if (unmounted.current) {
@@ -154,7 +168,10 @@ function GifsCarousel({
     });
 
     return (
-        <div className = { styles.carousel }>
+        <div
+            className = { clsx(styles.carousel,
+            overflowDrawer && styles.carouselDrawer
+            ) }>
             {
                 !fetching && gifs.map((gif, index) => {
                     const gifSrc = getGifUrl(gif);
@@ -162,7 +179,7 @@ function GifsCarousel({
                     return (
                         <img
                             alt = 'GIF'
-                            className = { styles.img }
+                            className = { clsx(styles.img, overflowDrawer && styles.imgDrawer) }
                             key = { `gifResult-${index}-${gifSrc}` }
                             onClick = { e => onGifClick(gif, e) }
                             onKeyDown = { e => handleKeyDown(gif, e) }

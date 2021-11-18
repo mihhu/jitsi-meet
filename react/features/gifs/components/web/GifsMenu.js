@@ -3,8 +3,9 @@
 /* eslint-disable react/jsx-no-bind */
 import { GiphyFetch } from '@giphy/js-fetch-api';
 import { makeStyles } from '@material-ui/core';
+import clsx from 'clsx';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { isMobileBrowser } from '../../../base/environment/utils';
@@ -14,6 +15,7 @@ import InputField from '../../../base/premeeting/components/web/InputField';
 import { connect } from '../../../base/redux';
 import { sendMessage } from '../../../chat/actions.any';
 import { dockToolbox } from '../../../toolbox/actions.web';
+import { showOverflowDrawer } from '../../../toolbox/functions.web';
 import { formatGifUrlMessage, getGifUrl } from '../../functions';
 
 import GifsCarousel from './GifsCarousel';
@@ -53,22 +55,30 @@ type Props = {
     t: Function
 };
 
-const useStyles = makeStyles(() => {
+const useStyles = makeStyles(theme => {
     return {
         gifsMenu: {
             width: '400px'
         },
         searchField: {
-            backgroundColor: 'white',
+            backgroundColor: theme.palette.field01,
+            borderRadius: `${theme.shape.borderRadius}px`,
             border: 'none',
             outline: 0,
-            borderRadius: '6px',
-            fontSize: '14px',
-            lineHeight: '20px',
-            color: '#1c2025',
-            padding: '10px 16px',
+            ...theme.typography.bodyShortRegular,
+            lineHeight: `${theme.typography.bodyShortRegular.lineHeight}px`,
+            color: theme.palette.text01,
+            padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
             textAlign: 'center',
-            width: '100%'
+            width: '100%',
+            marginBottom: `${theme.spacing(3)}px`
+        },
+
+        overflowMenu: {
+            padding: `${theme.spacing(3)}px`,
+            width: '100%',
+            height: '100%',
+            boxSizing: 'border-box'
         }
     };
 });
@@ -88,6 +98,7 @@ function GifsMenu({
     const styles = useStyles();
     const dispatch = useDispatch();
     const inputRef = useRef();
+    const overflowDrawer = useSelector(showOverflowDrawer);
 
     const fetchGifs = async (offset, key) => {
         const options = {
@@ -132,7 +143,10 @@ function GifsMenu({
 
 
     return (
-        <div className = { styles.gifsMenu }>
+        <div
+            className = { clsx(styles.gifsMenu,
+                overflowDrawer && styles.overflowMenu
+            ) }>
             <InputField
                 autoFocus = { true }
                 className = { styles.searchField }
