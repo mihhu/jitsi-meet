@@ -2,6 +2,7 @@
 
 /* eslint-disable react/jsx-no-bind */
 import { makeStyles } from '@material-ui/core';
+import Spinner from '@atlaskit/spinner';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { getGifUrl } from '../../functions';
@@ -73,11 +74,17 @@ const useStyles = makeStyles(() => {
     return {
         carousel: {
             overflowX: 'auto',
-            height: 'auto'
+            height: `${gifHeight}px`
         },
 
         img: {
-            height: `${gifHeight}px`
+            height: '100%'
+        },
+        spinnerContainer: {
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
         }
     };
 });
@@ -149,7 +156,7 @@ function GifsCarousel({
     return (
         <div className = { styles.carousel }>
             {
-                gifs.map((gif, index) => {
+                !fetching && gifs.map((gif, index) => {
                     const gifSrc = getGifUrl(gif);
 
                     return (
@@ -164,6 +171,11 @@ function GifsCarousel({
                     );
                 })
             }
+            { fetching && (
+                <div className = { styles.spinnerContainer }>
+                    <Spinner size = { 'large' } />
+                </div>
+            )}
         </div>
     );
 }
