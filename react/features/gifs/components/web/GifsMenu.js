@@ -16,6 +16,7 @@ import { connect } from '../../../base/redux';
 import { sendMessage } from '../../../chat/actions.any';
 import { dockToolbox } from '../../../toolbox/actions.web';
 import { formatGifUrlMessage, getGifUrl } from '../../functions';
+import GifsCarousel from './GifsCarousel';
 
 const TO_EXPORT_API_KEY = 'A4C69dn3EPwkbAZnAujzA9B29ocUKJeC';
 
@@ -88,18 +89,18 @@ function GifsMenu({
     const dispatch = useDispatch();
     const inputRef = useRef();
 
-    const fetchGifs = async offset => {
+    const fetchGifs = async (offset, key) => {
         const options = {
             rating: 'pg-13',
             limit: 10,
             offset
         };
 
-        if (!searchKey) {
+        if (!key) {
             return await giphyFetch.trending(options);
         }
 
-        return await giphyFetch.search(searchKey, options);
+        return await giphyFetch.search(key, options);
     };
 
     useEffect(() => {
@@ -118,6 +119,7 @@ function GifsMenu({
 
     const handleGifClick = useCallback((gif, e) => {
         e.preventDefault();
+        e.stopPropagation();
         const url = getGifUrl(gif);
 
         dispatch(sendMessage(formatGifUrlMessage(url), true));
@@ -128,15 +130,9 @@ function GifsMenu({
         setSearchKey(value);
     });
 
+
     return (
         <div className = { styles.gifsMenu }>
-            <Carousel
-                fetchGifs = { fetchGifs }
-                gifHeight = { 200 }
-                gutter = { 5 }
-                hideAttribution = { true }
-                key = { searchKey }
-                onGifClick = { handleGifClick } />
             <InputField
                 autoFocus = { true }
                 className = { styles.searchField }
@@ -144,6 +140,18 @@ function GifsMenu({
                 placeHolder = { t('gifs.search') }
                 ref = { inputRef }
                 testId = 'gifSearch.key' />
+            {/* <Carousel
+                fetchGifs = { fetchGifs }
+                gifHeight = { 200 }
+                gutter = { 5 }
+                hideAttribution = { true }
+                key = { searchKey }
+                onGifClick = { handleGifClick } /> */}
+            <GifsCarousel
+                fetchGifs = { fetchGifs }
+                gifHeight = { 200 }
+                onGifClick = { handleGifClick }
+                searchKey = { searchKey } />
         </div>
     );
 }
