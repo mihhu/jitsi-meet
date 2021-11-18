@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
+import { translate } from '../../../base/i18n';
 import { showOverflowDrawer } from '../../../toolbox/functions.web';
 import { getGifUrl } from '../../functions';
 
@@ -68,28 +69,40 @@ type Props = {
     /**
      * The searched key for Gifs.
      */
-    searchKey: String
+    searchKey: String,
+
+    /**
+     * Used for translation.
+     */
+     t: Function
 };
 
 const gifHeight = 200;
 
-const useStyles = makeStyles(() => {
+const useStyles = makeStyles(theme => {
     return {
         carousel: {
             overflowX: 'auto',
-            height: `${gifHeight}px`
+            height: `${gifHeight}px`,
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start'
         },
 
         img: {
             height: '100%',
-            maxWidth: '100%'
+            maxWidth: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
         },
 
         spinnerContainer: {
             height: '100%',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            width: '100%'
         },
 
         carouselDrawer: {
@@ -98,6 +111,15 @@ const useStyles = makeStyles(() => {
 
         imgDrawer: {
             maxHeight: `${gifHeight}px`
+        },
+
+        notFound: {
+            color: theme.palette.field01Disabled,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%'
         }
     };
 });
@@ -110,9 +132,11 @@ const useStyles = makeStyles(() => {
 function GifsCarousel({
     fetchGifs,
     onGifClick,
-    searchKey
+    searchKey,
+    t
 }: Props) {
     const [ gifs, setGifs ] = useState([]);
+    const [ loading, isLoading ] = useState(true);
     const [ fetching, isFetching ] = useState(false);
     const styles = useStyles();
     const paginator = useRef();
@@ -127,6 +151,7 @@ function GifsCarousel({
 
         if (!fetching) {
             isFetching(true);
+            isLoading(true);
             let fetchedGifs = [];
 
             try {
@@ -134,13 +159,10 @@ function GifsCarousel({
             } catch (error) {
                 isFetching(false);
             }
-            if (fetchedGifs) {
-                if (gifs.length !== fetchedGifs.length) {
-                    setGifs(fetchedGifs);
-                    isFetching(false);
-
-                    // onFetch();
-                }
+            if (fetchedGifs && !fetching) {
+                isLoading(false);
+                isFetching(false);
+                setGifs(fetchedGifs);
             }
         }
     }, []);
@@ -167,34 +189,49 @@ function GifsCarousel({
         onGifClick(gif, e);
     });
 
+    const renderGifsSequence = useCallback(() => {
+        return !loading && gifs.map((gif, index) => {
+            const gifSrc = getGifUrl(gif);
+
+            return (
+                <img
+                    alt = 'GIF'
+                    className = { clsx(styles.img, overflowDrawer && styles.imgDrawer) }
+                    key = { `gifResult-${index}-${gifSrc}` }
+                    onClick = { e => onGifClick(gif, e) }
+                    onKeyDown = { e => handleKeyDown(gif, e) }
+                    src = { gifSrc }
+                    tabIndex = '0' />
+            );
+        });
+    }, [ loading, gifs, onGifClick, handleKeyDown ]);
+
+    const renderLoadingSpinner = useCallback(() => {
+        return loading && (
+            <div className = { styles.spinnerContainer }>
+                <Spinner size = { 'large' } />
+            </div>
+        );
+    }, [ loading ]);
+
+    const renderNoResults = useCallback(() => {
+        return (!loading && gifs.length === 0) && (
+            <div className = { styles.notFound }>
+                {t('gifs.noResults')}
+            </div>
+        );
+    }, [ loading, gifs, t ]);
+
     return (
         <div
             className = { clsx(styles.carousel,
-            overflowDrawer && styles.carouselDrawer
+                overflowDrawer && styles.carouselDrawer
             ) }>
-            {
-                !fetching && gifs.map((gif, index) => {
-                    const gifSrc = getGifUrl(gif);
-
-                    return (
-                        <img
-                            alt = 'GIF'
-                            className = { clsx(styles.img, overflowDrawer && styles.imgDrawer) }
-                            key = { `gifResult-${index}-${gifSrc}` }
-                            onClick = { e => onGifClick(gif, e) }
-                            onKeyDown = { e => handleKeyDown(gif, e) }
-                            src = { gifSrc }
-                            tabIndex = '0' />
-                    );
-                })
-            }
-            { fetching && (
-                <div className = { styles.spinnerContainer }>
-                    <Spinner size = { 'large' } />
-                </div>
-            )}
+            { renderGifsSequence() }
+            { renderLoadingSpinner() }
+            { renderNoResults() }
         </div>
     );
 }
 
-export default GifsCarousel;
+export default translate(GifsCarousel);
