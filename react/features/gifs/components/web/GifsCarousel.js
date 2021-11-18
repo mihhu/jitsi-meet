@@ -67,10 +67,17 @@ type Props = {
     searchKey: String
 };
 
+const gifHeight = 200;
+
 const useStyles = makeStyles(() => {
     return {
         carousel: {
-            overflow: 'auto'
+            overflowX: 'auto',
+            height: 'auto'
+        },
+
+        img: {
+            height: `${gifHeight}px`
         }
     };
 });
@@ -82,7 +89,6 @@ const useStyles = makeStyles(() => {
  */
 function GifsCarousel({
     fetchGifs,
-    gifHeight,
     onGifClick,
     searchKey
 }: Props) {
@@ -141,9 +147,7 @@ function GifsCarousel({
     });
 
     return (
-        <div
-            className = { styles.carousel }
-            style = {{ height: gifHeight + 10 }}>
+        <div className = { styles.carousel }>
             {
                 gifs.map((gif, index) => {
                     const gifSrc = getGifUrl(gif);
@@ -151,11 +155,11 @@ function GifsCarousel({
                     return (
                         <img
                             alt = 'GIF'
+                            className = { styles.img }
                             key = { `gifResult-${index}-${gifSrc}` }
                             onClick = { e => onGifClick(gif, e) }
                             onKeyDown = { e => handleKeyDown(gif, e) }
                             src = { gifSrc }
-                            style = {{ height: gifHeight }}
                             tabIndex = '0' />
                     );
                 })

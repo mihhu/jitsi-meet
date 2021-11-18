@@ -142,7 +142,6 @@ function GifsMenu({
                 testId = 'gifSearch.key' />
             <GifsCarousel
                 fetchGifs = { fetchGifs }
-                gifHeight = { 200 }
                 onGifClick = { handleGifClick }
                 searchKey = { searchKey } />
         </div>
