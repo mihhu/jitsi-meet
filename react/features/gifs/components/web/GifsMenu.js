@@ -4,7 +4,7 @@
 import { GiphyFetch } from '@giphy/js-fetch-api';
 import { Carousel } from '@giphy/react-components';
 import { makeStyles } from '@material-ui/core';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -44,7 +44,7 @@ type Props = {
     /**
      * The click event handler.
      */
-     handleClick: Function,
+    handleClick: Function,
 
     /**
      * Used for translation.
@@ -86,6 +86,7 @@ function GifsMenu({
     const [ searchKey, setSearchKey ] = useState();
     const styles = useStyles();
     const dispatch = useDispatch();
+    const inputRef = useRef();
 
     const fetchGifs = async offset => {
         const options = {
@@ -103,7 +104,10 @@ function GifsMenu({
 
     useEffect(() => {
         _dockToolbox(true);
-        const initGifs = async () => await fetchGifs();
+        const initGifs = async () => {
+            await fetchGifs();
+            inputRef.current.focus();
+        };
 
         initGifs();
 
@@ -138,6 +142,7 @@ function GifsMenu({
                 className = { styles.searchField }
                 onChange = { handleSearchKeyChange }
                 placeHolder = { t('gifs.search') }
+                ref = { inputRef }
                 testId = 'gifSearch.key' />
         </div>
     );

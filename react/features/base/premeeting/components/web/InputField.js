@@ -22,6 +22,11 @@ type Props = {
     testId?: string,
 
     /**
+     * Input ref.
+     */
+    innerRef?: Object,
+
+    /**
      * Callback for the onChange event of the field.
      */
     onChange: Function,
@@ -70,7 +75,7 @@ type State = {
 /**
  * Implements a pre-styled input field to be used on pre-meeting screens.
  */
-export default class InputField extends PureComponent<Props, State> {
+class InputField extends PureComponent<Props, State> {
     static defaultProps: {
         className: '',
         type: 'text'
@@ -132,6 +137,7 @@ export default class InputField extends PureComponent<Props, State> {
                 onKeyDown = { this._onKeyDown }
                 placeholder = { this.props.placeHolder }
                 readOnly = { this.props.readOnly }
+                ref = { this.props.innerRef }
                 type = { this.props.type }
                 value = { this.state.value } />
         );
@@ -197,3 +203,9 @@ export default class InputField extends PureComponent<Props, State> {
         onSubmit && event.key === 'Enter' && onSubmit();
     }
 }
+
+export default React.forwardRef((props, ref) => (
+    <InputField
+        innerRef = { ref }
+        { ...props } />
+));
