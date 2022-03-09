@@ -1,73 +1,142 @@
 // @flow
 
 import { throttle } from 'lodash';
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import rough from 'roughjs/bundled/rough.esm';
+import { addStroke, getWhiteboardStrokes } from '../..';
 
 const generator = rough.generator();
 
-const Whiteboard = ({ dimensions, settings }) => {
+const usePreviousDimensions = (dimensions) => {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = dimensions;
+    }, [dimensions]);
+    return ref.current;
+}
+
+const Whiteboard = ({ dimensions, tool }) => {
+    const dispatch = useDispatch();
     const canvasRef = useRef(null);
-    const [ elements, setElements ] = useState([]);
-    const [ drawing, setDrawing ] = useState(false);
+    const contextRef = useRef(null);
+    const previousDimensions = usePreviousDimensions(dimensions);
+    const [points, setPoints] = useState([]);
+    const [drawing, setDrawing] = useState(false);
+    const strokes = useSelector(getWhiteboardStrokes);
 
-    const createElement = useCallback((x1, y1, x2, y2) => ({
-        content: generator.line(x1, y1, x2, y2),
-        settings,
-        x1,
-        x2,
-        y1,
-        y2
-    }), [ generator ]);
+    const createContent = useCallback(() => {
+        return tool === 'pen'
+            ? generator.line(points[0][0], points[0][1], points[1][0], points[1][1])
+            : generator.linearPath(points);
+    }, [generator, points]);
 
-    useLayoutEffect(() => {
+    const createStroke = useCallback(() => ({
+        content: createContent(),
+        dimensions,
+        points,
+        type: tool
+    }), [ createContent, points, tool ]);
+
+    useEffect(() => {
         if (!canvasRef.current) {
             return;
         }
 
-        const context = canvasRef.current.getContext('2d');    
-        context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        contextRef.current = canvasRef.current.getContext('2d');
+        contextRef.current.clearRect(dimensions.top, dimensions.left, canvasRef.current.width, canvasRef.current.height);
+        contextRef.current.imageSmoothingQuality = 'medium';
+        contextRef.current.fillColor = 'black';
 
+        if (previousDimensions && (
+                previousDimensions.width !== dimensions.width
+                || previousDimensions.height !== dimensions.height)
+        ) {
+            const previousCanvas = contextRef.current.getImageData(
+                previousDimensions.top,
+                previousDimensions.left,
+                previousDimensions.width,
+                previousDimensions.height
+            );
+            const xScale = dimensions.width / previousDimensions.width;
+            const yScale = dimensions.height / previousDimensions.height;
+            canvasRef.current.width = dimensions.width;
+            canvasRef.current.height = dimensions.height;
+            contextRef.current.scale(xScale, yScale);
+            contextRef.current.putImageData(previousCanvas, 0, 0);
+        }
+
+        canvasRef.current.width = dimensions.width;
+        canvasRef.current.height = dimensions.height;
         const roughCanvas = rough.canvas(canvasRef.current);
-        elements.forEach(e => roughCanvas.draw(e.content));
-    }, [ elements ]);
+        strokes.forEach(s => roughCanvas.draw(s.content));
+        // lines.forEach(p => roughCanvas.draw(p.content));
+    }, [strokes, dimensions, rough]);
 
     const startDrawing = ({ clientX, clientY }) => {
         setDrawing(true);
 
-        const element = createElement(clientX, clientY, clientX, clientY);
-        setElements([ ...elements, element ]);
+        setPoints([[clientX, clientY]]);
+        contextRef.current.moveTo(clientX, clientY);
+
+        // if (tool === 'pen') {
+        //     // const path = createPath(clientX, clientY, clientX, clientY);
+        //     // setPaths([ ...paths, path ]);
+        //     setPoints([ [ clientX, clientY ] ]);
+        //     contextRef.current.moveTo(clientX, clientY );
+        //     return;
+        // }
+        // if (tool === 'pencil') {
+        //     setPoints([ [ clientX, clientY ] ]);
+        //     contextRef.current.moveTo(clientX, clientY );
+        // }
     };
 
-    const finishDrawing = () => {
+    const finishDrawing = useCallback(() => {
+        dispatch(addStroke(createStroke()));
         setDrawing(false);
-    };
+
+        setPoints([]);
+    }, [dispatch, addStroke, createStroke]);
 
     const draw = ({ clientX, clientY }) => {
         if (!drawing) {
             return;
         }
 
-        const index = elements.length - 1;
-        const { x1, y1 } = elements[index];
+        // if (tool === 'pen') {
+        //     // const index = paths.length - 1;
+        //     // const [ start ] = paths[index];
+        //     const index = points.length - 1;
+        //     const [ start ] = points[index];
+        //     const updatedPath = createPath(start.x1, start.y1, clientX, clientY);
 
-        const updatedElement = createElement(x1, y1, clientX, clientY);
-        setElements([
-            ...elements.slice(0, index),
-            updatedElement, 
-            ...elements.slice(index + 1)
-        ]);
+        //     // setPaths([
+        //     //     ...paths.slice(0, index),
+        //     //     updatedPath,
+        //     //     ...paths.slice(index + 1)
+        //     // ]);
+        //     return;
+        // }
+        // if (tool === 'pencil') {
+        //     contextRef.current.lineTo(clientX, clientY);
+        //     contextRef.current.stroke();
+        //     setPoints([ ...points, [ clientX, clientY ]]);
+        // }
 
+        contextRef.current.lineTo(clientX, clientY);
+        contextRef.current.stroke();
+        setPoints([...points, [clientX, clientY]]);
     };
 
     return (
         <canvas
-            height = { dimensions.height }
-            onMouseDown = { startDrawing }
-            onMouseMove = { throttle(draw, 500) }
-            onMouseUp = { finishDrawing }
-            ref = { canvasRef }
-            width = { dimensions.width } />
+            height={dimensions.height}
+            onMouseDown={startDrawing}
+            onMouseMove={throttle(draw, 500)}
+            onMouseUp={finishDrawing}
+            ref={canvasRef}
+            width={dimensions.width} />
     );
 };
 

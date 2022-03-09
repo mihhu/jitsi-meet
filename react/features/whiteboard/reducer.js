@@ -2,7 +2,12 @@
 
 import { ReducerRegistry } from '../base/redux';
 
-import { END_WHITEBOARD, START_WHITEBOARD, TOGGLE_WHITEBOARD } from './actionTypes';
+import {
+    ADD_STROKE,
+    END_WHITEBOARD,
+    START_WHITEBOARD,
+    TOGGLE_WHITEBOARD
+} from './actionTypes';
 
 /**
  * Initial state of whiteboard's part of Redux store.
@@ -14,7 +19,12 @@ const INITIAL_STATE = {
      *
      * @type {boolean}
      */
-    on: false
+    on: false,
+
+    /**
+     * The current strokes on the whiteboard.
+     */
+    strokes: []
 };
 
 ReducerRegistry.register(
@@ -35,6 +45,14 @@ ReducerRegistry.register(
             return {
                 ...state,
                 on: action.on
+            };
+        case ADD_STROKE:
+            return {
+                ...state,
+                strokes: [
+                    ...state.strokes,
+                    action.stroke
+                ]
             };
         }
 

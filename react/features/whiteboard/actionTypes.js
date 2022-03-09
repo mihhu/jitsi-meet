@@ -26,4 +26,20 @@ export const END_WHITEBOARD = 'END_WHITEBOARD';
  */
 export const TOGGLE_WHITEBOARD = 'TOGGLE_WHITEBOARD';
 
+/**
+ * The type of the action which adds a stroke on the whiteboard.
+ *
+ * {
+ *     type: ADD_STROKE,
+ *     stroke: {
+ *          content,
+ *          points,
+ *          type
+ *     },
+ *     dimensions: {
+ *          width,
+ *          height
+ *     },
+ * }
+ */
 export const ADD_STROKE = 'ADD_STROKE';
