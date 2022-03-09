@@ -1,6 +1,6 @@
 // @flow
 import { makeStyles } from '@material-ui/core';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { getVerticalViewMaxWidth } from '../../../filmstrip/functions.web';
@@ -20,6 +20,7 @@ const useStyles = makeStyles(() => {
 
 const WhiteboardContainer = () => {
     const styles = useStyles();
+    const [ tool, setTool ] = useState('pencil');
     const filmstripWidth = useSelector(getVerticalViewMaxWidth);
     const { clientHeight, clientWidth } = useSelector(state => state['features/base/responsive-ui']);
     const dimensions = useMemo(() => {
@@ -29,26 +30,33 @@ const WhiteboardContainer = () => {
         if (aspectRatioHeight <= clientHeight) {
             return {
                 width: maxWidth,
-                height: aspectRatioHeight
-                // left: 0,
-                // top: (clientHeight - aspectRatioHeight) / 2
+                height: aspectRatioHeight,
+                left: 0,
+                top: (clientHeight - aspectRatioHeight) / 2
             };
         }
 
         return {
             height: clientHeight,
-            width: clientHeight * WHITEBOARD_ASPECT_RATIO
-            // top: 0,
-            // left: (maxWidth - (clientHeight * WHITEBOARD_ASPECT_RATIO)) / 2
+            width: clientHeight * WHITEBOARD_ASPECT_RATIO,
+            top: 0,
+            left: (maxWidth - (clientHeight * WHITEBOARD_ASPECT_RATIO)) / 2
         };
     }, [ filmstripWidth, clientHeight, clientWidth ]);
+
+    const handleSelectTool = useCallback(event => {
+        setTool(event.target.getAttribute('tool'));
+    }, []);
 
     return (
         <div
             className = { styles.container }
             style = { dimensions }>
-            <Whiteboard dimensions = { dimensions } />
-            <WhiteboardToolbar />
+            <Whiteboard
+                dimensions = { dimensions }
+                tool = { tool } />
+            <WhiteboardToolbar
+                selectTool = { handleSelectTool } />
         </div>
     );
 };
