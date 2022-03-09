@@ -45,12 +45,16 @@ export function toggleWhiteboard(on) {
 /**
  * Adds a stroke on the whiteboard.
  *
- * @param {boolean} on - Whether it should be on or not.
+ * @param {Object} stroke - The stroke to be added.
+ * @param {Object} dimensions - The current dimensions of the canvas.
+ * @param {boolean} received - Whether the stroke was received from another participant.
  * @returns {Object}
  */
- export function addStroke(stroke) {
+export function addStroke(stroke, dimensions, received = false) {
     return {
         type: ADD_STROKE,
-        stroke
+        stroke,
+        dimensions,
+        received
     };
 }

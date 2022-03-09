@@ -28,7 +28,7 @@ import { endpointMessageReceived } from '../subtitles';
 import {
     showToolbox
 } from '../toolbox/actions';
-import { ENDPOINT_WHITEBOARD_STROKE_NAME } from '../whiteboard';
+import { addStroke, ENDPOINT_WHITEBOARD_STROKE_NAME } from '../whiteboard';
 
 import { ADD_MESSAGE, SEND_MESSAGE, OPEN_CHAT, CLOSE_CHAT, SET_IS_POLL_TAB_FOCUSED } from './actionTypes';
 import { addMessage, clearMessages } from './actions';
@@ -272,7 +272,10 @@ function _addChatMsgListener(conference, store) {
                 }
 
                 if (eventData.name === ENDPOINT_WHITEBOARD_STROKE_NAME) { // ! and feature enabled
-                    // store.dispatch(addStroke(eventData.stroke, true)); // ! dispatch add stroke
+                    console.log('\n\n\n received \n\n\n', eventData.stroke, eventData.dimensions);
+
+                    // ! add participantId and timestamp to store
+                    store.dispatch(addStroke(eventData.stroke, eventData.dimensions, true));
                 }
             }
         });

@@ -1,6 +1,6 @@
 // @flow
 import { CONFERENCE_WILL_JOIN, getCurrentConference } from '../base/conference';
-import { getParticipantById, isLocalParticipantModerator } from '../base/participants';
+import { getLocalParticipant, getParticipantById, isLocalParticipantModerator } from '../base/participants';
 import { MiddlewareRegistry } from '../base/redux';
 import { setTileView } from '../video-layout';
 
@@ -66,10 +66,14 @@ MiddlewareRegistry.register(store => next => action => {
         const state = store.getState();
         const conference = getCurrentConference(state);
 
-        if (conference && !action.received) {
+        if (conference && !action.received) { // ! and not alone in conf
+            console.log('\n\n\n send \n\n\n', action);
             conference.sendEndpointMessage('', {
                 name: ENDPOINT_WHITEBOARD_STROKE_NAME,
-                stroke: action.stroke
+                stroke: action.stroke,
+                dimensions: action.dimensions,
+                participantId: getLocalParticipant(state).id,
+                timestamp: Date.now()
             });
         }
     }

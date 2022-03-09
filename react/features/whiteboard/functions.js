@@ -13,7 +13,7 @@ export function isWhiteboardOn(state) {
 /**
  * Returns the whiteboard strokes.
  *
- * @param {Object} state
+ * @param {Object} state - Redux state.
  * @returns {Array}
  */
 export function getWhiteboardStrokes(state) {

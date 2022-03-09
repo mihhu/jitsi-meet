@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 
 import { getVerticalViewMaxWidth } from '../../../filmstrip/functions.web';
 import { WHITEBOARD_ASPECT_RATIO } from '../../constants';
+
 import Whiteboard from './Whiteboard';
 import WhiteboardToolbar from './WhiteboardToolbar';
 
