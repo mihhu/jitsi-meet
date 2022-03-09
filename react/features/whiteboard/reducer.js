@@ -2,7 +2,7 @@
 
 import { ReducerRegistry } from '../base/redux';
 
-import { END_WHITEBOARD, START_WHITEBOARD } from './actionTypes';
+import { END_WHITEBOARD, START_WHITEBOARD, TOGGLE_WHITEBOARD } from './actionTypes';
 
 /**
  * Initial state of whiteboard's part of Redux store.
@@ -30,6 +30,11 @@ ReducerRegistry.register(
             return {
                 ...state,
                 on: false
+            };
+        case TOGGLE_WHITEBOARD:
+            return {
+                ...state,
+                on: action.on
             };
         }
 

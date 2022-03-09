@@ -1,6 +1,6 @@
 // @flow
 
-import { END_WHITEBOARD, START_WHITEBOARD } from './actionTypes';
+import { END_WHITEBOARD, START_WHITEBOARD, TOGGLE_WHITEBOARD } from './actionTypes';
 
 /**
  * Starts the whiteboard mode.
@@ -21,5 +21,18 @@ export function startWhiteboard() {
 export function endWhiteboard() {
     return {
         type: END_WHITEBOARD
+    };
+}
+
+/**
+ * Changes the whiteboard on state.
+ *
+ * @param {boolean} on - Whether it should be on or not.
+ * @returns {Object}
+ */
+export function toggleWhiteboard(on) {
+    return {
+        type: TOGGLE_WHITEBOARD,
+        on
     };
 }

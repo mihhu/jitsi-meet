@@ -2,6 +2,7 @@
 
 import { translate } from '../../../base/i18n';
 import { IconCameraRefresh } from '../../../base/icons';
+import { isLocalParticipantModerator } from '../../../base/participants';
 import { connect } from '../../../base/redux';
 import { AbstractButton, type AbstractButtonProps } from '../../../base/toolbox/components';
 import { endWhiteboard, isWhiteboardOn, startWhiteboard } from '../../../whiteboard';
@@ -63,7 +64,8 @@ class ToggleWhiteboardButton extends AbstractButton<Props, any> {
 function mapStateToProps(state): Object {
 
     return {
-        _whiteboardOn: isWhiteboardOn(state)
+        _whiteboardOn: isWhiteboardOn(state),
+        visible: isLocalParticipantModerator(state)
     };
 }
 
