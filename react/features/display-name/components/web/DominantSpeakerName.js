@@ -55,7 +55,8 @@ const DominantSpeakerName = () => {
     if (showDisplayName && nameToDisplay && selectedId !== localId && !isTileView) {
         return (
             <div
-                className = { `${classes.badgeContainer}${toolboxVisible ? ` ${classes.containerElevated}` : ''}` }>
+                className = { `stage-participant-label ${classes.badgeContainer}${
+                    toolboxVisible ? ` ${classes.containerElevated}` : ''}` }>
                 <DisplayNameBadge name = { nameToDisplay } />
             </div>
         );

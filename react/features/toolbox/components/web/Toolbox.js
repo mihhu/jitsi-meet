@@ -91,6 +91,7 @@ import ProfileButton from './ProfileButton';
 import Separator from './Separator';
 import ShareDesktopButton from './ShareDesktopButton';
 import ToggleCameraButton from './ToggleCameraButton';
+import ToggleWhiteboardButton from './ToggleWhiteboardButton';
 import VideoSettingsButton from './VideoSettingsButton';
 
 /**
@@ -665,9 +666,15 @@ class Toolbox extends Component<Props> {
             group: 2
         };
 
+        // const tileview = {
+        //     key: 'tileview',
+        //     Content: TileViewButton,
+        //     group: 2
+        // };
+
         const tileview = {
             key: 'tileview',
-            Content: TileViewButton,
+            Content: ToggleWhiteboardButton,
             group: 2
         };
 

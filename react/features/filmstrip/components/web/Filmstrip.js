@@ -321,12 +321,12 @@ class Filmstrip extends PureComponent <Props, State> {
                     <div
                         className = 'filmstrip__videos'
                         id = 'filmstripLocalVideo'>
-                        <div id = 'filmstripLocalVideoThumbnail'>
-                            {
-                                !tileViewActive && <Thumbnail
+                        {
+                            !tileViewActive && <div id = 'filmstripLocalVideoThumbnail'>
+                                <Thumbnail
                                     key = 'local' />
-                            }
-                        </div>
+                            </div>
+                        }
                     </div>
                 )}
                 {

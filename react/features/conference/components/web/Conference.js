@@ -1,5 +1,6 @@
 // @flow
 
+import clsx from 'clsx';
 import _ from 'lodash';
 import React from 'react';
 
@@ -22,6 +23,7 @@ import { toggleToolboxVisible } from '../../../toolbox/actions.any';
 import { fullScreenChanged, showToolbox } from '../../../toolbox/actions.web';
 import { JitsiPortal, Toolbox } from '../../../toolbox/components/web';
 import { LAYOUTS, getCurrentLayout } from '../../../video-layout';
+import { WhiteboardContainer, isWhiteboardOn } from '../../../whiteboard';
 import { maybeShowSuboptimalExperienceNotification } from '../../functions';
 import {
     AbstractConference,
@@ -95,12 +97,17 @@ type Props = AbstractProps & {
     /**
      * If lobby page is visible or not.
      */
-     _showLobby: boolean,
+    _showLobby: boolean,
 
     /**
      * If prejoin page is visible or not.
      */
     _showPrejoin: boolean,
+
+    /**
+     * Whether or not the whiteboard should be displayed.
+     */
+    _showWhiteboard: boolean,
 
     dispatch: Function,
     t: Function
@@ -214,7 +221,8 @@ class Conference extends AbstractConference<Props, *> {
             _notificationsVisible,
             _overflowDrawer,
             _showLobby,
-            _showPrejoin
+            _showPrejoin,
+            _showWhiteboard
         } = this.props;
 
         return (
@@ -224,7 +232,7 @@ class Conference extends AbstractConference<Props, *> {
                 onMouseLeave = { this._onMouseLeave }
                 onMouseMove = { this._onMouseMove } >
                 <div
-                    className = { _layoutClassName }
+                    className = { clsx(_layoutClassName, _showWhiteboard && 'whiteboard-container') }
                     id = 'videoconference_page'
                     onMouseMove = { isMobileBrowser() ? undefined : this._onShowToolbar }
                     ref = { this._setBackground }>
@@ -235,6 +243,7 @@ class Conference extends AbstractConference<Props, *> {
                         id = 'videospace'
                         onTouchStart = { this._onVidespaceTouchStart }>
                         <LargeVideo />
+                        {_showWhiteboard && <WhiteboardContainer />}
                         <Filmstrip />
                     </div>
 
@@ -395,7 +404,8 @@ function _mapStateToProps(state) {
         _overflowDrawer: overflowDrawer,
         _roomName: getConferenceNameForTitle(state),
         _showLobby: getIsLobbyVisible(state),
-        _showPrejoin: isPrejoinPageVisible(state)
+        _showPrejoin: isPrejoinPageVisible(state),
+        _showWhiteboard: isWhiteboardOn(state)
     };
 }
 
