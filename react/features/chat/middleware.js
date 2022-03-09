@@ -28,7 +28,7 @@ import { endpointMessageReceived } from '../subtitles';
 import {
     showToolbox
 } from '../toolbox/actions';
-
+import { ENDPOINT_WHITEBOARD_STROKE_NAME } from '../whiteboard';
 
 import { ADD_MESSAGE, SEND_MESSAGE, OPEN_CHAT, CLOSE_CHAT, SET_IS_POLL_TAB_FOCUSED } from './actionTypes';
 import { addMessage, clearMessages } from './actions';
@@ -254,16 +254,12 @@ function _addChatMsgListener(conference, store) {
         (...args) => {
             const state = store.getState();
 
-            if (!isReactionsEnabled(state)) {
-                return;
-            }
-
             store.dispatch(endpointMessageReceived(...args));
 
             if (args && args.length >= 2) {
                 const [ { _id }, eventData ] = args;
 
-                if (eventData.name === ENDPOINT_REACTION_NAME) {
+                if (eventData.name === ENDPOINT_REACTION_NAME && isReactionsEnabled(state)) {
                     store.dispatch(pushReactions(eventData.reactions));
 
                     _handleReceivedMessage(store, {
@@ -273,6 +269,10 @@ function _addChatMsgListener(conference, store) {
                         lobbyChat: false,
                         timestamp: eventData.timestamp
                     }, false, true);
+                }
+
+                if (eventData.name === ENDPOINT_WHITEBOARD_STROKE_NAME) { // ! and feature enabled
+                    // store.dispatch(addStroke(eventData.stroke, true)); // ! dispatch add stroke
                 }
             }
         });

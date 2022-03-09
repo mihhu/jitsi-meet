@@ -25,3 +25,5 @@ export const END_WHITEBOARD = 'END_WHITEBOARD';
  * }
  */
 export const TOGGLE_WHITEBOARD = 'TOGGLE_WHITEBOARD';
+
+export const ADD_STROKE = 'ADD_STROKE';

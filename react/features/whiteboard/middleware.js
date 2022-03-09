@@ -4,9 +4,9 @@ import { getParticipantById, isLocalParticipantModerator } from '../base/partici
 import { MiddlewareRegistry } from '../base/redux';
 import { setTileView } from '../video-layout';
 
-import { END_WHITEBOARD, START_WHITEBOARD, TOGGLE_WHITEBOARD } from './actionTypes';
+import { ADD_STROKE, END_WHITEBOARD, START_WHITEBOARD, TOGGLE_WHITEBOARD } from './actionTypes';
 import { toggleWhiteboard } from './actions';
-import { TOGGLE_WHITEBOARD_COMMAND } from './constants';
+import { ENDPOINT_WHITEBOARD_STROKE_NAME, TOGGLE_WHITEBOARD_COMMAND } from './constants';
 import { isWhiteboardOn } from './functions';
 import logger from './logger';
 
@@ -59,6 +59,18 @@ MiddlewareRegistry.register(store => next => action => {
     case TOGGLE_WHITEBOARD: {
         if (action.on) {
             store.dispatch(setTileView(false));
+        }
+        break;
+    }
+    case ADD_STROKE: {
+        const state = store.getState();
+        const conference = getCurrentConference(state);
+
+        if (conference && !action.received) {
+            conference.sendEndpointMessage('', {
+                name: ENDPOINT_WHITEBOARD_STROKE_NAME,
+                stroke: action.stroke
+            });
         }
     }
     }
