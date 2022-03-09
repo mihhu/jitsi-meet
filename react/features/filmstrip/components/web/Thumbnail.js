@@ -937,7 +937,7 @@ function _mapStateToProps(state, ownProps): Object {
     const { participantID } = ownProps;
     const participant = participantID === 'whiteboard'
         ? {
-            id: 'whiteboard',
+            id: participantID,
             local: false
         }
         : getParticipantByIdOrUndefined(state, participantID);
