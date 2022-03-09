@@ -6,6 +6,7 @@ import { getPinnedParticipant } from '../../../base/participants';
 import { connect } from '../../../base/redux';
 import { shouldHideSelfView } from '../../../base/settings/functions.any';
 import { getCurrentLayout, LAYOUTS } from '../../../video-layout';
+import { isWhiteboardOn } from '../../../whiteboard';
 import { showGridInVerticalView } from '../../functions';
 
 import Thumbnail from './Thumbnail';
@@ -124,6 +125,7 @@ function _mapStateToProps(state, ownProps) {
     const enableThumbnailReordering = testing.enableThumbnailReordering ?? true;
     const _verticalViewGrid = showGridInVerticalView(state);
     const _isAnyParticipantPinned = Boolean(getPinnedParticipant(state));
+    const _isWhiteboardOn = isWhiteboardOn(state);
 
     if (_currentLayout === LAYOUTS.TILE_VIEW || _verticalViewGrid) {
         const { columnIndex, rowIndex } = ownProps;
@@ -135,7 +137,10 @@ function _mapStateToProps(state, ownProps) {
         const index = (rowIndex * columns) + columnIndex;
         let horizontalOffset;
         const { iAmRecorder } = state['features/base/config'];
-        const participantsLenght = remoteParticipantsLength + (iAmRecorder ? 0 : 1) - (disableSelfView ? 1 : 0);
+        const participantsLenght = remoteParticipantsLength
+            + (iAmRecorder ? 0 : 1)
+            - (disableSelfView ? 1 : 0)
+            + (_isWhiteboardOn ? 1 : 0);
 
         if (rowIndex === rows - 1) { // center the last row
             const { width: thumbnailWidth } = thumbnailSize;
@@ -148,6 +153,14 @@ function _mapStateToProps(state, ownProps) {
 
         if (index > participantsLenght - 1) {
             return {};
+        }
+
+        if (_isWhiteboardOn && index === participantsLenght - 1) {
+            return {
+                _participantID: 'whiteboard',
+                _horizontalOffset: horizontalOffset,
+                _isAnyParticipantPinned: _verticalViewGrid && _isAnyParticipantPinned
+            };
         }
 
         // When the thumbnails are reordered, local participant is inserted at index 0.

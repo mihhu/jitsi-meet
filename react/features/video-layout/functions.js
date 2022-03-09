@@ -17,6 +17,7 @@ import {
     TWO_COLUMN_BREAKPOINT
 } from '../filmstrip/constants';
 import { isVideoPlaying } from '../shared-video/functions';
+import { isWhiteboardOn } from '../whiteboard';
 
 import { LAYOUTS } from './constants';
 
@@ -71,7 +72,7 @@ export function getMaxColumnCount(state: Object, width: ?number) {
     if (!disableResponsiveTiles) {
         const { clientWidth } = state['features/base/responsive-ui'];
         const widthToUse = width || clientWidth;
-        const participantCount = getParticipantCount(state);
+        const participantCount = getParticipantCount(state) + isWhiteboardOn(state) ? 1 : 0;
 
         // If there are just two participants in a conference, enforce single-column view for mobile size.
         if (participantCount === 2 && widthToUse < ASPECT_RATIO_BREAKPOINT) {
@@ -111,7 +112,8 @@ export function getTileViewGridDimensions(state: Object, width: ?number) {
     const disableSelfView = shouldHideSelfView(state);
     const numberOfParticipants = getParticipantCountWithFake(state)
         - (iAmRecorder ? 1 : 0)
-        - (disableSelfView ? 1 : 0);
+        - (disableSelfView ? 1 : 0)
+        + (isWhiteboardOn(state) ? 1 : 0);
     const isWeb = navigator.product !== 'ReactNative';
 
     // When there are 3 participants in the call we want them to be placed on a single row unless the maxColumn setting

@@ -25,7 +25,7 @@ import {
 } from '../../../base/tracks';
 import { getVideoObjectPosition } from '../../../face-centering/functions';
 import { PresenceLabel } from '../../../presence-status';
-import { getCurrentLayout, LAYOUTS } from '../../../video-layout';
+import { getCurrentLayout, LAYOUTS, setTileView } from '../../../video-layout';
 import {
     DISPLAY_MODE_TO_CLASS_NAME,
     DISPLAY_VIDEO,
@@ -567,6 +567,9 @@ class Thumbnail extends Component<Props, State> {
         const { _participant, dispatch } = this.props;
         const { id, pinned } = _participant;
 
+        if (id === 'whiteboard') {
+            dispatch(setTileView(false));
+        }
         dispatch(pinParticipant(pinned ? null : id));
     }
 
@@ -932,8 +935,12 @@ class Thumbnail extends Component<Props, State> {
  */
 function _mapStateToProps(state, ownProps): Object {
     const { participantID } = ownProps;
-
-    const participant = getParticipantByIdOrUndefined(state, participantID);
+    const participant = participantID === 'whiteboard'
+        ? {
+            id: 'whiteboard',
+            local: false
+        }
+        : getParticipantByIdOrUndefined(state, participantID);
     const id = participant?.id;
     const isLocal = participant?.local ?? true;
     const tracks = state['features/base/tracks'];

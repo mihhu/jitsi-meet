@@ -395,17 +395,18 @@ class Conference extends AbstractConference<Props, *> {
 function _mapStateToProps(state) {
     const { backgroundAlpha, mouseMoveCallbackInterval } = state['features/base/config'];
     const { overflowDrawer } = state['features/toolbox'];
+    const currentLayout = getCurrentLayout(state);
 
     return {
         ...abstractMapStateToProps(state),
         _backgroundAlpha: backgroundAlpha,
-        _layoutClassName: LAYOUT_CLASSNAMES[getCurrentLayout(state)],
+        _layoutClassName: LAYOUT_CLASSNAMES[currentLayout],
         _mouseMoveCallbackInterval: mouseMoveCallbackInterval,
         _overflowDrawer: overflowDrawer,
         _roomName: getConferenceNameForTitle(state),
         _showLobby: getIsLobbyVisible(state),
         _showPrejoin: isPrejoinPageVisible(state),
-        _showWhiteboard: isWhiteboardOn(state)
+        _showWhiteboard: isWhiteboardOn(state) && currentLayout !== LAYOUTS.TILE_VIEW
     };
 }
 
