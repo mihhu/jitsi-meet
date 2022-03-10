@@ -4,6 +4,7 @@ import { ReducerRegistry } from '../base/redux';
 
 import {
     ADD_STROKE,
+    CHANGE_COLOR,
     CLEAR_WHITEBOARD,
     END_WHITEBOARD,
     START_WHITEBOARD,
@@ -14,6 +15,13 @@ import {
  * Initial state of whiteboard's part of Redux store.
  */
 const INITIAL_STATE = {
+
+    /**
+     * Current color.
+     *
+     * @type {string}
+     */
+    color: '#000',
 
     /**
      * The indicator which determines whether the whiteboard mode is on.
@@ -59,6 +67,11 @@ ReducerRegistry.register(
                     ...state.strokes,
                     action.stroke
                 ]
+            };
+        case CHANGE_COLOR:
+            return {
+                ...state,
+                color: action.color
             };
         }
 

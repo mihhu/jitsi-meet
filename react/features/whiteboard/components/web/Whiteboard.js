@@ -43,10 +43,12 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
     const [ drawing, setDrawing ] = useState(false);
     const strokes = useSelector(getWhiteboardStrokes);
 
-    const getOffsetCoordinates = useCallback(({ clientX, clientY }) => ({
-        x: clientX - dimensions.left,
-        y: clientY - dimensions.top
-    }), [ dimensions ]);
+    const getOffsetCoordinates = useCallback(({ clientX, clientY }) => {
+        return {
+            x: clientX - dimensions.left,
+            y: clientY - dimensions.top
+        };
+    }, [ dimensions ]);
 
     const createStroke = useCallback(() => {
         return {

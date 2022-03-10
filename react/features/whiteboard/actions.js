@@ -2,6 +2,7 @@
 
 import {
     ADD_STROKE,
+    CHANGE_COLOR,
     CLEAR_WHITEBOARD,
     END_WHITEBOARD,
     START_WHITEBOARD,
@@ -70,5 +71,18 @@ export function addStroke(stroke, dimensions, received = false) {
         stroke,
         dimensions,
         received
+    };
+}
+
+/**
+ * Changes the stroke color.
+ *
+ * @param {string} color - The new color.
+ * @returns {Object}
+ */
+export function changeColor(color) {
+    return {
+        type: CHANGE_COLOR,
+        color
     };
 }
