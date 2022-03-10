@@ -16,7 +16,7 @@ import {
     ENDPOINT_WHITEBOARD_STROKE_NAME,
     TOGGLE_WHITEBOARD_COMMAND
 } from './constants';
-import { isWhiteboardOn } from './functions';
+import { getInitialWhiteboardDimensions, isWhiteboardOn } from './functions';
 import logger from './logger';
 
 // import './subscriber';
@@ -79,16 +79,27 @@ MiddlewareRegistry.register(store => next => action => {
     case ADD_STROKE: {
         const state = store.getState();
         const conference = getCurrentConference(state);
+        const initialDimensions = getInitialWhiteboardDimensions(state);
         const participantCount = getParticipantCount(state);
 
         if (conference && !action.received && participantCount > 1) {
             conference.sendEndpointMessage('', {
                 name: ENDPOINT_WHITEBOARD_STROKE_NAME,
                 stroke: action.stroke,
-                dimensions: action.dimensions,
+                dimensions: initialDimensions,
                 participantId: getLocalParticipant(state).id,
                 timestamp: Date.now()
             });
+        }
+        if (action.received) {
+            const initialDimensions = getInitialWhiteboardDimensions(state);
+            const xScale = initialDimensions.width / action.dimensions.width;
+            const yScale = initialDimensions.height / action.dimensions.height;
+            action.stroke.points = action.stroke.points.map(([ x, y ]) => [
+                x * xScale,
+                y * yScale
+            ]);
+
         }
         break;
     }

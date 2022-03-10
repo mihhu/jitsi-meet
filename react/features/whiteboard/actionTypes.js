@@ -55,6 +55,15 @@ export const END_WHITEBOARD = 'END_WHITEBOARD';
 export const START_WHITEBOARD = 'START_WHITEBOARD';
 
 /**
+ * The type of the action which saves the initial whiteboard dimensions.
+ * {
+ *      type: SAVE_INITIAL_DIMENSIONS,
+ *      dimensions: {}
+ * }
+ */
+export const SAVE_INITIAL_DIMENSIONS = 'SAVE_INITIAL_DIMENSIONS';
+
+/**
  * The type of the action which toggles the whiteboard mode.
  *
  * {

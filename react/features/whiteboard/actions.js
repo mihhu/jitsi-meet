@@ -5,6 +5,7 @@ import {
     CHANGE_COLOR,
     CLEAR_WHITEBOARD,
     END_WHITEBOARD,
+    SAVE_INITIAL_DIMENSIONS,
     START_WHITEBOARD,
     TOGGLE_WHITEBOARD
 } from './actionTypes';
@@ -54,6 +55,19 @@ export function clearWhiteboard(received = false) {
     return {
         type: CLEAR_WHITEBOARD,
         received
+    };
+}
+
+/**
+ * Saves initial whiteboard dimensions.
+ *
+ * @param {Object} dimensions - The initial dimensions.
+ * @returns {Object}
+ */
+export function saveInitialDimensions(dimensions) {
+    return {
+        type: SAVE_INITIAL_DIMENSIONS,
+        dimensions
     };
 }
 

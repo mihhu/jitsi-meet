@@ -1,10 +1,12 @@
 // @flow
 import { makeStyles } from '@material-ui/core';
-import React, { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { getVerticalViewMaxWidth } from '../../../filmstrip/functions';
+import { saveInitialDimensions } from '../../actions';
 import { WHITEBOARD_ASPECT_RATIO } from '../../constants';
+import { getInitialWhiteboardDimensions } from '../../functions';
 
 import Whiteboard from './Whiteboard';
 import WhiteboardToolbar from './WhiteboardToolbar';
@@ -21,7 +23,9 @@ const useStyles = makeStyles(() => {
 
 const WhiteboardContainer = () => {
     const styles = useStyles();
+    const dispatch = useDispatch();
     const filmstripWidth = useSelector(getVerticalViewMaxWidth);
+    const initialDimensions = useSelector(getInitialWhiteboardDimensions);
     const { clientHeight, clientWidth } = useSelector(state => state['features/base/responsive-ui']);
     const dimensions = useMemo(() => {
         const maxWidth = clientWidth - filmstripWidth;
@@ -45,13 +49,20 @@ const WhiteboardContainer = () => {
     }, [ filmstripWidth, clientHeight, clientWidth ]);
 
     // const [ tool, setTool ] = useState('pencil');
+
+    useEffect(() => {
+        if (!initialDimensions && dimensions) {
+            dispatch(saveInitialDimensions(dimensions));
+        }
+    }, []);
+
     return (
         <div
             className = { styles.container }
             style = { dimensions }>
             <Whiteboard
                 dimensions = { dimensions }
-                tool = { 'penciel' } />
+                tool = { 'pencil' } />
             <WhiteboardToolbar height = { dimensions.height } />
         </div>
     );

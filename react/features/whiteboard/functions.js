@@ -19,3 +19,13 @@ export function isWhiteboardOn(state) {
 export function getWhiteboardStrokes(state) {
     return state['features/whiteboard'].strokes;
 }
+
+/**
+ * Returns the initial whiteboard dimensions.
+ *
+ * @param {Object} state - Redux state.
+ * @returns {Object}
+ */
+export function getInitialWhiteboardDimensions(state) {
+    return state['features/whiteboard'].dimensions;
+}

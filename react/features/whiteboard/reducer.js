@@ -7,6 +7,7 @@ import {
     CHANGE_COLOR,
     CLEAR_WHITEBOARD,
     END_WHITEBOARD,
+    SAVE_INITIAL_DIMENSIONS,
     START_WHITEBOARD,
     TOGGLE_WHITEBOARD
 } from './actionTypes';
@@ -22,6 +23,11 @@ const INITIAL_STATE = {
      * @type {string}
      */
     color: '#000',
+
+    /**
+     * The initial dimensions of the whiteboard.
+     */
+    dimensions: null,
 
     /**
      * The indicator which determines whether the whiteboard mode is on.
@@ -54,6 +60,11 @@ ReducerRegistry.register(
             return {
                 ...state,
                 on: action.on
+            };
+        case SAVE_INITIAL_DIMENSIONS:
+            return {
+                ...state,
+                dimensions: action.dimensions
             };
         case CLEAR_WHITEBOARD:
             return {
