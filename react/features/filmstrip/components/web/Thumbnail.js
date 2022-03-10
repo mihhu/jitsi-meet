@@ -912,7 +912,6 @@ class Thumbnail extends Component<Props, State> {
                 <ThumbnailAudioIndicator _audioTrack = { _audioTrack } />
                 <div className = { clsx(classes.borderIndicator, 'raised-hand-border') } />
                 <div className = { clsx(classes.borderIndicator, 'active-speaker-indicator') } />
-                {console.log('\n\n participant \n\n', _participant.id, _whiteboardImg)}
                 {_whiteboardImg && <div className = { classes.whiteboard }>
                     <img
                         alt = 'Whiteboard'

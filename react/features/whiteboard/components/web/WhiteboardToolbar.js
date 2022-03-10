@@ -101,10 +101,10 @@ const WhiteboardToolbar = ({ height }: Props) => {
         className = { styles.container }
         ref = { toolbarRef }
         style = {{ top }}>
-        <WhiteboardToolbarButton
+        {moderator && <WhiteboardToolbarButton
             icon = { IconCloseX }
             onClick = { handleClear }
-            tooltip = { 'Clear' } /** TODO - lang. */ />
+            tooltip = { 'Clear' } /** TODO - lang. */ />}
         <WhiteboardToolbarButton
             tooltip = { 'Color' } /** TODO - lang. */>
             <input
