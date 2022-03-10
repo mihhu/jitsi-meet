@@ -33,12 +33,13 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
     const [ drawing, setDrawing ] = useState(false);
     const strokes = useSelector(getWhiteboardStrokes);
 
-    /* eslint-disable-next-line arrow-body-style */
-    const createStroke = useCallback(() => ({
-        content: generator.linearPath(points),
-        points,
-        type: tool
-    }), [ points, tool ]);
+    const createStroke = useCallback(() => {
+        return {
+            content: generator.linearPath(points),
+            points,
+            type: tool
+        };
+    }, [ points, tool ]);
 
     useLayoutEffect(() => {
         if (!canvasRef.current) {
@@ -93,21 +94,23 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
         setPoints([]);
     }, [ dispatch, addStroke, createStroke, dimensions ]);
 
-    const draw = ({ clientX, clientY }) => {
-        if (!drawing) {
-            return;
-        }
+    const draw = useCallback(({ clientX, clientY }, _contextRef, _points) => {
+        _contextRef.current.lineTo(clientX, clientY);
+        _contextRef.current.stroke();
+        setPoints([ ..._points, [ clientX, clientY ] ]);
+    }, []);
 
-        contextRef.current.lineTo(clientX, clientY);
-        contextRef.current.stroke();
-        setPoints([ ...points, [ clientX, clientY ] ]);
-    };
+    const throttledDraw = useCallback(throttle((e, _contextRef, _points) => {
+        draw(e, _contextRef, _points);
+    }, 50, { leading: true }), []);
 
     return (
         <canvas
             height = { dimensions.height }
             onMouseDown = { startDrawing }
-            onMouseMove = { throttle(draw, 500) } // TODO - fix throttle
+            // eslint-disable-next-line react/jsx-no-bind
+            onMouseMove = { e => drawing
+                && throttledDraw(e, contextRef, points) }
             onMouseUp = { finishDrawing }
             ref = { canvasRef }
             width = { dimensions.width } />
