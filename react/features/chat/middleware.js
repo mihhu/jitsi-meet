@@ -275,8 +275,6 @@ function _addChatMsgListener(conference, store) {
                 }
 
                 if (eventData.name === ENDPOINT_WHITEBOARD_STROKE_NAME) { // ! and feature enabled
-                    console.log('\n\n\n received \n\n\n', eventData.stroke, eventData.dimensions);
-
                     // ! add participantId and timestamp to store
                     store.dispatch(addStroke(eventData.stroke, eventData.dimensions, true));
                 }

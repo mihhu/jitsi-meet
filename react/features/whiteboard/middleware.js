@@ -82,7 +82,6 @@ MiddlewareRegistry.register(store => next => action => {
         const participantCount = getParticipantCount(state);
 
         if (conference && !action.received && participantCount > 1) {
-            console.log('\n\n\n send \n\n\n', action);
             conference.sendEndpointMessage('', {
                 name: ENDPOINT_WHITEBOARD_STROKE_NAME,
                 stroke: action.stroke,
