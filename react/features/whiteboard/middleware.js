@@ -9,14 +9,22 @@ import {
 import { MiddlewareRegistry } from '../base/redux';
 import { setTileView } from '../video-layout';
 
-import { ADD_STROKE, CLEAR_WHITEBOARD, END_WHITEBOARD, START_WHITEBOARD, TOGGLE_WHITEBOARD } from './actionTypes';
+import {
+    ADD_STROKE,
+    CLEAR_WHITEBOARD,
+    END_WHITEBOARD,
+    START_WHITEBOARD,
+    SYNC_ALL_WHITEBOARDS,
+    TOGGLE_WHITEBOARD
+} from './actionTypes';
 import { clearWhiteboard, toggleWhiteboard } from './actions';
 import {
     CLEAR_WHITEBOARD_COMMAND,
     ENDPOINT_WHITEBOARD_STROKE_NAME,
+    ENDPOINT_WHITEBOARD_SYNC_NAME,
     TOGGLE_WHITEBOARD_COMMAND
 } from './constants';
-import { getInitialWhiteboardDimensions, isWhiteboardOn } from './functions';
+import { getInitialWhiteboardDimensions, getWhiteboardStrokes, isWhiteboardOn } from './functions';
 import logger from './logger';
 
 // import './subscriber';
@@ -92,9 +100,9 @@ MiddlewareRegistry.register(store => next => action => {
             });
         }
         if (action.received) {
-            const initialDimensions = getInitialWhiteboardDimensions(state);
             const xScale = initialDimensions.width / action.dimensions.width;
             const yScale = initialDimensions.height / action.dimensions.height;
+
             action.stroke.points = action.stroke.points.map(([ x, y ]) => [
                 x * xScale,
                 y * yScale
@@ -110,6 +118,22 @@ MiddlewareRegistry.register(store => next => action => {
         if (isWhiteboardOn(state) && isLocalParticipantModerator(state) && !action.received) {
             conference.sendCommand(CLEAR_WHITEBOARD_COMMAND, {});
         }
+        break;
+    }
+    case SYNC_ALL_WHITEBOARDS: {
+        const state = store.getState();
+        const conference = getCurrentConference(state);
+        const participantCount = getParticipantCount(state);
+        const initialDimensions = getInitialWhiteboardDimensions(state);
+
+        if (conference && !action.received && participantCount > 1) {
+            conference.sendEndpointMessage('', {
+                name: ENDPOINT_WHITEBOARD_SYNC_NAME,
+                strokes: getWhiteboardStrokes(state),
+                dimensions: initialDimensions
+            });
+        }
+        break;
     }
     }
 

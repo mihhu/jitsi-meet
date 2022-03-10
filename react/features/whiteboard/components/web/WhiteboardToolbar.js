@@ -2,10 +2,11 @@
 
 import { makeStyles } from '@material-ui/core';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { IconCloseX } from '../../../base/icons';
-import { changeColor, clearWhiteboard } from '../../actions';
+import { IconCloseX, IconLiveStreaming } from '../../../base/icons';
+import { isLocalParticipantModerator } from '../../../base/participants';
+import { changeColor, clearWhiteboard, syncAllWhiteboards } from '../../actions';
 
 import WhiteboardToolbarButton from './WhiteboardToolbarButton';
 
@@ -54,6 +55,7 @@ const WhiteboardToolbar = ({ height }: Props) => {
         initialPosition: 0
     });
     const [ top, setTop ] = useState(0);
+    const moderator = useSelector(isLocalParticipantModerator);
 
     const handleClear = useCallback(() => {
         dispatch(clearWhiteboard());
@@ -61,6 +63,10 @@ const WhiteboardToolbar = ({ height }: Props) => {
 
     const handleColorChange = useCallback(e => {
         dispatch(changeColor(e.target.value));
+    }, []);
+
+    const handleSyncAll = useCallback(() => {
+        dispatch(syncAllWhiteboards());
     }, []);
 
     const startDrag = useCallback(e => setDrag({
@@ -107,6 +113,10 @@ const WhiteboardToolbar = ({ height }: Props) => {
                 onChange = { handleColorChange }
                 type = 'color' />
         </WhiteboardToolbarButton>
+        {moderator && <WhiteboardToolbarButton
+            icon = { IconLiveStreaming }
+            onClick = { handleSyncAll }
+            tooltip = { 'Sync all' } /** TODO - lang. */ />}
         <WhiteboardToolbarButton
             tooltip = { drag.on ? null : 'Drag Handle' } /** TODO - lang. */>
             <div

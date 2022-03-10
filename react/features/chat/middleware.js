@@ -1,4 +1,5 @@
 // @flow
+import { batch } from 'react-redux';
 import { type Dispatch } from 'redux';
 
 import { APP_WILL_MOUNT, APP_WILL_UNMOUNT } from '../base/app';
@@ -30,7 +31,8 @@ import {
 } from '../toolbox/actions';
 import {
     addStroke,
-    ENDPOINT_WHITEBOARD_STROKE_NAME
+    ENDPOINT_WHITEBOARD_STROKE_NAME,
+    ENDPOINT_WHITEBOARD_SYNC_NAME
 } from '../whiteboard';
 
 import { ADD_MESSAGE, SEND_MESSAGE, OPEN_CHAT, CLOSE_CHAT, SET_IS_POLL_TAB_FOCUSED } from './actionTypes';
@@ -275,8 +277,16 @@ function _addChatMsgListener(conference, store) {
                 }
 
                 if (eventData.name === ENDPOINT_WHITEBOARD_STROKE_NAME) { // ! and feature enabled
-                    // ! add participantId and timestamp to store
+                    // ! add participantId and timestamp to store - for history
                     store.dispatch(addStroke(eventData.stroke, eventData.dimensions, true));
+                }
+
+                if (eventData.name === ENDPOINT_WHITEBOARD_SYNC_NAME) { // ! and feature enabled
+                    const { strokes, dimensions } = eventData;
+
+                    batch(() => {
+                        strokes.forEach(stroke => store.dispatch(addStroke(stroke, dimensions, true)));
+                    });
                 }
             }
         });

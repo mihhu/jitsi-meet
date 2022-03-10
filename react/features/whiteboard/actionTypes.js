@@ -64,6 +64,15 @@ export const START_WHITEBOARD = 'START_WHITEBOARD';
 export const SAVE_INITIAL_DIMENSIONS = 'SAVE_INITIAL_DIMENSIONS';
 
 /**
+ * The type of the action which syncs all participants whiteboards with the local one (moderators only).
+ *
+ * {
+ *     type: SYNC_ALL_WHITEBOARDS
+ * }
+ */
+export const SYNC_ALL_WHITEBOARDS = 'SYNC_ALL_WHITEBOARDS';
+
+/**
  * The type of the action which toggles the whiteboard mode.
  *
  * {

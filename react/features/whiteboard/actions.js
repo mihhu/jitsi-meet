@@ -7,6 +7,7 @@ import {
     END_WHITEBOARD,
     SAVE_INITIAL_DIMENSIONS,
     START_WHITEBOARD,
+    SYNC_ALL_WHITEBOARDS,
     TOGGLE_WHITEBOARD
 } from './actionTypes';
 
@@ -98,5 +99,16 @@ export function changeColor(color) {
     return {
         type: CHANGE_COLOR,
         color
+    };
+}
+
+/**
+ * Syncs all whiteboards with local one.
+ *
+ * @returns {Object}
+ */
+export function syncAllWhiteboards() {
+    return {
+        type: SYNC_ALL_WHITEBOARDS
     };
 }

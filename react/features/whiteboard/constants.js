@@ -4,6 +4,11 @@
 export const ENDPOINT_WHITEBOARD_STROKE_NAME = 'endpoint-whiteboard-stroke';
 
 /**
+ * The payload name for the datachannel/endpoint whiteboard sync event.
+ */
+export const ENDPOINT_WHITEBOARD_SYNC_NAME = 'endpoint-whiteboard-sync';
+
+/**
  * The {ClearWhiteboard} command.
  */
 export const CLEAR_WHITEBOARD_COMMAND = 'clear-whiteboard';
