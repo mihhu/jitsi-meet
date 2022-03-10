@@ -29,3 +29,13 @@ export function getWhiteboardStrokes(state) {
 export function getInitialWhiteboardDimensions(state) {
     return state['features/whiteboard'].dimensions;
 }
+
+/**
+ * Returns the stroke color.
+ *
+ * @param {Object} state - Redux state.
+ * @returns {string}
+ */
+export function getStrokeColor(state) {
+    return state['features/whiteboard'].color;
+}
