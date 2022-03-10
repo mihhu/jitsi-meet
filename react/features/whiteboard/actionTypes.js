@@ -33,7 +33,7 @@ export const TOGGLE_WHITEBOARD = 'TOGGLE_WHITEBOARD';
  *     type: CLEAR_WHITEBOARD
  * }
  */
- export const CLEAR_WHITEBOARD = 'CLEAR_WHITEBOARD';
+export const CLEAR_WHITEBOARD = 'CLEAR_WHITEBOARD';
 
 /**
  * The type of the action which adds a stroke on the whiteboard.

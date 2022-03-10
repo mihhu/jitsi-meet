@@ -1,6 +1,11 @@
 // @flow
 import { CONFERENCE_WILL_JOIN, getCurrentConference } from '../base/conference';
-import { getLocalParticipant, getParticipantById, isLocalParticipantModerator } from '../base/participants';
+import {
+    getLocalParticipant,
+    getParticipantById,
+    getParticipantCount,
+    isLocalParticipantModerator
+} from '../base/participants';
 import { MiddlewareRegistry } from '../base/redux';
 import { setTileView } from '../video-layout';
 
@@ -32,7 +37,7 @@ MiddlewareRegistry.register(store => next => action => {
                 _onToggleWhiteboardCommand(attributes, id, store);
             });
         conference.addCommandListener(
-            CLEAR_WHITEBOARD, id => {
+            CLEAR_WHITEBOARD_COMMAND, (_, id) => {
                 _onClearWhiteboardCommand(id, store);
             }
         );
@@ -74,8 +79,9 @@ MiddlewareRegistry.register(store => next => action => {
     case ADD_STROKE: {
         const state = store.getState();
         const conference = getCurrentConference(state);
+        const participantCount = getParticipantCount(state);
 
-        if (conference && !action.received) { // ! and not alone in conf
+        if (conference && !action.received && participantCount > 1) {
             console.log('\n\n\n send \n\n\n', action);
             conference.sendEndpointMessage('', {
                 name: ENDPOINT_WHITEBOARD_STROKE_NAME,
@@ -91,7 +97,9 @@ MiddlewareRegistry.register(store => next => action => {
         const state = store.getState();
         const conference = getCurrentConference(state);
 
-        conference.sendCommand(CLEAR_WHITEBOARD_COMMAND);
+        if (isWhiteboardOn(state) && isLocalParticipantModerator(state) && !action.received) {
+            conference.sendCommand(CLEAR_WHITEBOARD_COMMAND, {});
+        }
     }
     }
 
@@ -179,5 +187,5 @@ function _onClearWhiteboardCommand(id, store) {
         return;
     }
 
-    store.dispatch(clearWhiteboard());
+    store.dispatch(clearWhiteboard(true));
 }

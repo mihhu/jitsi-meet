@@ -46,11 +46,13 @@ export function toggleWhiteboard(on) {
 /**
  * Clears the whiteboard.
  *
+ * @param {boolean} received - Whether the stroke was received from another participant.
  * @returns {Object}
  */
-export function clearWhiteboard() {
+export function clearWhiteboard(received = false) {
     return {
-        type: CLEAR_WHITEBOARD
+        type: CLEAR_WHITEBOARD,
+        received
     };
 }
 
