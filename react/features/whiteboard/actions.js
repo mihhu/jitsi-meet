@@ -2,6 +2,7 @@
 
 import {
     ADD_STROKE,
+    CLEAR_WHITEBOARD,
     END_WHITEBOARD,
     START_WHITEBOARD,
     TOGGLE_WHITEBOARD
@@ -39,6 +40,17 @@ export function toggleWhiteboard(on) {
     return {
         type: TOGGLE_WHITEBOARD,
         on
+    };
+}
+
+/**
+ * Clears the whiteboard.
+ *
+ * @returns {Object}
+ */
+export function clearWhiteboard() {
+    return {
+        type: CLEAR_WHITEBOARD
     };
 }
 

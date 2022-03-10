@@ -4,6 +4,7 @@ import { ReducerRegistry } from '../base/redux';
 
 import {
     ADD_STROKE,
+    CLEAR_WHITEBOARD,
     END_WHITEBOARD,
     START_WHITEBOARD,
     TOGGLE_WHITEBOARD
@@ -45,6 +46,11 @@ ReducerRegistry.register(
             return {
                 ...state,
                 on: action.on
+            };
+        case CLEAR_WHITEBOARD:
+            return {
+                ...state,
+                strokes: []
             };
         case ADD_STROKE:
             return {

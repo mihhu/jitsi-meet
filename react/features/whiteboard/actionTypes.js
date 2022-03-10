@@ -27,6 +27,15 @@ export const END_WHITEBOARD = 'END_WHITEBOARD';
 export const TOGGLE_WHITEBOARD = 'TOGGLE_WHITEBOARD';
 
 /**
+ * The type of the action which clears the whiteboard.
+ *
+ * {
+ *     type: CLEAR_WHITEBOARD
+ * }
+ */
+ export const CLEAR_WHITEBOARD = 'CLEAR_WHITEBOARD';
+
+/**
  * The type of the action which adds a stroke on the whiteboard.
  *
  * {
@@ -37,8 +46,10 @@ export const TOGGLE_WHITEBOARD = 'TOGGLE_WHITEBOARD';
  *          type
  *     },
  *     dimensions: {
- *          width,
  *          height
+ *          left,
+ *          top,
+ *          width,
  *     },
  * }
  */

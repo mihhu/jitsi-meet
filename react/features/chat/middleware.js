@@ -28,7 +28,10 @@ import { endpointMessageReceived } from '../subtitles';
 import {
     showToolbox
 } from '../toolbox/actions';
-import { addStroke, ENDPOINT_WHITEBOARD_STROKE_NAME } from '../whiteboard';
+import {
+    addStroke,
+    ENDPOINT_WHITEBOARD_STROKE_NAME
+} from '../whiteboard';
 
 import { ADD_MESSAGE, SEND_MESSAGE, OPEN_CHAT, CLOSE_CHAT, SET_IS_POLL_TAB_FOCUSED } from './actionTypes';
 import { addMessage, clearMessages } from './actions';

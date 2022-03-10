@@ -4,9 +4,13 @@ import { getLocalParticipant, getParticipantById, isLocalParticipantModerator } 
 import { MiddlewareRegistry } from '../base/redux';
 import { setTileView } from '../video-layout';
 
-import { ADD_STROKE, END_WHITEBOARD, START_WHITEBOARD, TOGGLE_WHITEBOARD } from './actionTypes';
-import { toggleWhiteboard } from './actions';
-import { ENDPOINT_WHITEBOARD_STROKE_NAME, TOGGLE_WHITEBOARD_COMMAND } from './constants';
+import { ADD_STROKE, CLEAR_WHITEBOARD, END_WHITEBOARD, START_WHITEBOARD, TOGGLE_WHITEBOARD } from './actionTypes';
+import { clearWhiteboard, toggleWhiteboard } from './actions';
+import {
+    CLEAR_WHITEBOARD_COMMAND,
+    ENDPOINT_WHITEBOARD_STROKE_NAME,
+    TOGGLE_WHITEBOARD_COMMAND
+} from './constants';
 import { isWhiteboardOn } from './functions';
 import logger from './logger';
 
@@ -27,6 +31,11 @@ MiddlewareRegistry.register(store => next => action => {
             TOGGLE_WHITEBOARD_COMMAND, ({ attributes }, id) => {
                 _onToggleWhiteboardCommand(attributes, id, store);
             });
+        conference.addCommandListener(
+            CLEAR_WHITEBOARD, id => {
+                _onClearWhiteboardCommand(id, store);
+            }
+        );
         break;
     }
     case START_WHITEBOARD: {
@@ -76,6 +85,13 @@ MiddlewareRegistry.register(store => next => action => {
                 timestamp: Date.now()
             });
         }
+        break;
+    }
+    case CLEAR_WHITEBOARD: {
+        const state = store.getState();
+        const conference = getCurrentConference(state);
+
+        conference.sendCommand(CLEAR_WHITEBOARD_COMMAND);
     }
     }
 
@@ -125,4 +141,43 @@ function _onToggleWhiteboardCommand(attributes = {}, id, store) {
     if (oldState !== newState) {
         store.dispatch(toggleWhiteboard(newState));
     }
+}
+
+/**
+ * Notifies this instance about a "Toggle whiteboard" command received by the Jitsi
+ * conference.
+ *
+ * @param {string} id - The identifier of the participant who issuing the
+ * command. A notable idiosyncrasy to be mindful of here is that the command
+ * may be issued by the local participant.
+ * @param {Object} store - The redux store. Used to calculate and dispatch
+ * updates.
+ * @private
+ * @returns {void}
+ */
+function _onClearWhiteboardCommand(id, store) {
+    const state = store.getState();
+
+    // We require to know who issued the command because (1) only a
+    // moderator is allowed to send commands and (2) a command MUST be
+    // issued by a defined commander.
+    if (typeof id === 'undefined') {
+        return;
+    }
+
+    const participantSendingCommand = getParticipantById(state, id);
+
+    // The Command(s) API will send us our own commands and we don't want
+    // to act upon them.
+    if (participantSendingCommand.local) {
+        return;
+    }
+
+    if (participantSendingCommand.role !== 'moderator') {
+        logger.warn('Received clear-whiteboard command not from moderator');
+
+        return;
+    }
+
+    store.dispatch(clearWhiteboard());
 }

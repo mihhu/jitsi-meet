@@ -33,19 +33,12 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
     const [ drawing, setDrawing ] = useState(false);
     const strokes = useSelector(getWhiteboardStrokes);
 
-    const createContent = useCallback(() => {
-        tool === 'pen'
-            ? generator.line(points[0][0], points[0][1], points[1][0], points[1][1])
-            : generator.linearPath(points);
-    }, [ generator, points ]);
-
-    const createStroke = useCallback(() => {
-        return {
-            content: createContent(),
-            points,
-            type: tool
-        };
-    }, [ createContent, points, tool ]);
+    /* eslint-disable-next-line arrow-body-style */
+    const createStroke = useCallback(() => ({
+        content: generator.linearPath(points),
+        points,
+        type: tool
+    }), [ points, tool ]);
 
     useLayoutEffect(() => {
         if (!canvasRef.current) {
@@ -54,8 +47,8 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
 
         contextRef.current = canvasRef.current.getContext('2d');
         contextRef.current.clearRect(
-            dimensions.top,
-            dimensions.left,
+            0,
+            0,
             canvasRef.current.width,
             canvasRef.current.height);
         contextRef.current.imageSmoothingQuality = 'medium';
@@ -66,16 +59,16 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
                 || previousDimensions.height !== dimensions.height)
         ) {
             const previousCanvas = contextRef.current.getImageData(
-                previousDimensions.top,
-                previousDimensions.left,
+                0,
+                0,
                 previousDimensions.width,
                 previousDimensions.height
             );
             const xScale = dimensions.width / previousDimensions.width;
             const yScale = dimensions.height / previousDimensions.height;
 
-            canvasRef.current.width = dimensions.width;
-            canvasRef.current.height = dimensions.height;
+            // canvasRef.current.width = dimensions.width;
+            // canvasRef.current.height = dimensions.height;
             contextRef.current.scale(xScale, yScale);
             contextRef.current.putImageData(previousCanvas, 0, 0);
         }
@@ -85,27 +78,12 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
         const roughCanvas = rough.canvas(canvasRef.current);
 
         strokes.forEach(s => roughCanvas.draw(s.content));
-
-        // lines.forEach(p => roughCanvas.draw(p.content));
-    }, [ strokes, dimensions, rough ]);
+    }, [ canvasRef, contextRef, strokes, dimensions, previousDimensions, rough ]);
 
     const startDrawing = useCallback(({ clientX, clientY }) => {
         setDrawing(true);
-
         setPoints([ [ clientX, clientY ] ]);
         contextRef.current.moveTo(clientX, clientY);
-
-        // if (tool === 'pen') {
-        //     // const path = createPath(clientX, clientY, clientX, clientY);
-        //     // setPaths([ ...paths, path ]);
-        //     setPoints([ [ clientX, clientY ] ]);
-        //     contextRef.current.moveTo(clientX, clientY );
-        //     return;
-        // }
-        // if (tool === 'pencil') {
-        //     setPoints([ [ clientX, clientY ] ]);
-        //     contextRef.current.moveTo(clientX, clientY );
-        // }
     }, [ contextRef.current ]);
 
     const finishDrawing = useCallback(() => {
@@ -119,26 +97,6 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
         if (!drawing) {
             return;
         }
-
-        // if (tool === 'pen') {
-        //     // const index = paths.length - 1;
-        //     // const [ start ] = paths[index];
-        //     const index = points.length - 1;
-        //     const [ start ] = points[index];
-        //     const updatedPath = createPath(start.x1, start.y1, clientX, clientY);
-
-        //     // setPaths([
-        //     //     ...paths.slice(0, index),
-        //     //     updatedPath,
-        //     //     ...paths.slice(index + 1)
-        //     // ]);
-        //     return;
-        // }
-        // if (tool === 'pencil') {
-        //     contextRef.current.lineTo(clientX, clientY);
-        //     contextRef.current.stroke();
-        //     setPoints([ ...points, [ clientX, clientY ]]);
-        // }
 
         contextRef.current.lineTo(clientX, clientY);
         contextRef.current.stroke();
