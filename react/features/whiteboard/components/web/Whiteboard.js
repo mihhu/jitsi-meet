@@ -6,7 +6,7 @@ import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import rough from 'roughjs/bundled/rough.esm';
 
-import { addStroke, getInitialWhiteboardDimensions, getWhiteboardStrokes } from '../..';
+import { addStroke, getInitialWhiteboardDimensions, getStrokeColor, getWhiteboardStrokes } from '../..';
 
 const useStyles = makeStyles(() => {
     return {
@@ -32,6 +32,7 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
     const [ drawing, setDrawing ] = useState(false);
     const initialDimensions = useSelector(getInitialWhiteboardDimensions);
     const strokes = useSelector(getWhiteboardStrokes);
+    const strokeColor = useSelector(getStrokeColor);
 
     const getOffsetCoordinates = useCallback(({ clientX, clientY }, _initialDimensions, _dimensions) => {
         const x = clientX - _dimensions.left;
@@ -57,9 +58,10 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
     const createStroke = useCallback(() => {
         return {
             points,
+            strokeColor,
             type: tool
         };
-    }, [ points, tool ]);
+    }, [ points, strokeColor, tool ]);
 
     useLayoutEffect(() => {
         if (!canvasRef.current) {
@@ -73,7 +75,6 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
             canvasRef.current.width,
             canvasRef.current.height);
         contextRef.current.imageSmoothingQuality = 'medium';
-        contextRef.current.fillColor = 'black';
         canvasRef.current.width = dimensions.width;
         canvasRef.current.height = dimensions.height;
 
@@ -105,7 +106,9 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
 
         const roughCanvas = rough.canvas(canvasRef.current);
 
-        strokes.forEach(s => roughCanvas.draw(generator.linearPath(s.points)));
+        strokes.forEach(s => roughCanvas.draw(generator.linearPath(s.points, {
+            stroke: s.strokeColor
+        })));
     }, [ canvasRef, contextRef, strokes, dimensions, initialDimensions, rough ]);
 
     const startDrawing = useCallback(({ clientX, clientY }) => {
@@ -127,19 +130,32 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
         setPoints([]);
     }, [ dispatch, addStroke, createStroke, dimensions ]);
 
-    const draw = useCallback(({ clientX, clientY }, _points, _initialDimensions, _dimensions) => {
+    const draw = useCallback((
+            { clientX, clientY },
+            _points,
+            _initialDimensions,
+            _dimensions,
+            _strokeColor
+    ) => {
         const { x, y } = getOffsetCoordinates({
             clientX,
             clientY
         }, _initialDimensions, _dimensions);
 
+        contextRef.current.strokeStyle = _strokeColor;
         contextRef.current.lineTo(x, y);
         contextRef.current.stroke();
         setPoints([ ..._points, [ x, y ] ]);
     }, []);
 
-    const throttledDraw = useCallback(throttle((e, _points, _initialDimensions, _dimensions) => {
-        draw(e, _points, _initialDimensions, _dimensions);
+    const throttledDraw = useCallback(throttle((
+            e,
+            _points,
+            _initialDimensions,
+            _dimensions,
+            _strokeColor
+    ) => {
+        draw(e, _points, _initialDimensions, _dimensions, _strokeColor);
     }, 50, { leading: true }), []);
 
     return (
@@ -149,7 +165,7 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
             onMouseDown = { startDrawing }
             // eslint-disable-next-line react/jsx-no-bind
             onMouseMove = { e => drawing
-                && throttledDraw(e, points, initialDimensions, dimensions) }
+                && throttledDraw(e, points, initialDimensions, dimensions, strokeColor) }
             onMouseUp = { finishDrawing }
             ref = { canvasRef }
             width = { dimensions.width } />

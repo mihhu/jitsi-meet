@@ -109,7 +109,6 @@ MiddlewareRegistry.register(store => next => action => {
                 x * xScale,
                 y * yScale
             ]);
-
         }
         break;
     }
