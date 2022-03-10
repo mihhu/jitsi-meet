@@ -33,19 +33,17 @@ const WhiteboardContainer = () => {
         if (aspectRatioHeight <= clientHeight) {
             return {
                 width: maxWidth,
-                height: aspectRatioHeight
-
-                // left: 0,
-                // top: (clientHeight - aspectRatioHeight) / 2
+                height: aspectRatioHeight,
+                left: 0,
+                top: (clientHeight - aspectRatioHeight) / 2
             };
         }
 
         return {
             height: clientHeight,
-            width: clientHeight * WHITEBOARD_ASPECT_RATIO
-
-            // top: 0,
-            // left: (maxWidth - (clientHeight * WHITEBOARD_ASPECT_RATIO)) / 2
+            width: clientHeight * WHITEBOARD_ASPECT_RATIO,
+            top: 0,
+            left: (maxWidth - (clientHeight * WHITEBOARD_ASPECT_RATIO)) / 2
         };
     }, [ filmstripWidth, clientHeight, clientWidth ]);
 

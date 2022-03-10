@@ -1,11 +1,20 @@
 // @flow
 
+import { makeStyles } from '@material-ui/core';
 import { throttle } from 'lodash';
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import rough from 'roughjs/bundled/rough.esm';
 
 import { addStroke, getWhiteboardStrokes } from '../..';
+
+const useStyles = makeStyles(() => {
+    return {
+        whiteboard: {
+            position: 'absolute'
+        }
+    };
+});
 
 const generator = rough.generator();
 
@@ -25,6 +34,7 @@ type Props = { // TODO - add comments for each prop
 }
 
 const Whiteboard = ({ dimensions, tool }: Props) => {
+    const styles = useStyles();
     const dispatch = useDispatch();
     const canvasRef = useRef(null);
     const contextRef = useRef(null);
@@ -32,6 +42,11 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
     const [ points, setPoints ] = useState([]);
     const [ drawing, setDrawing ] = useState(false);
     const strokes = useSelector(getWhiteboardStrokes);
+
+    const getOffsetCoordinates = useCallback(({ clientX, clientY }) => ({
+        x: clientX - dimensions.left,
+        y: clientY - dimensions.top
+    }), [ dimensions ]);
 
     const createStroke = useCallback(() => {
         return {
@@ -48,34 +63,41 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
 
         contextRef.current = canvasRef.current.getContext('2d');
         contextRef.current.clearRect(
-            0,
-            0,
+            dimensions.left,
+            dimensions.top,
             canvasRef.current.width,
             canvasRef.current.height);
         contextRef.current.imageSmoothingQuality = 'medium';
         contextRef.current.fillColor = 'black';
+        canvasRef.current.width = dimensions.width;
+        canvasRef.current.height = dimensions.height;
 
         if (previousDimensions && (
             previousDimensions.width !== dimensions.width
-                || previousDimensions.height !== dimensions.height)
+                || previousDimensions.height !== dimensions.height
+                || previousDimensions.top !== dimensions.top
+                || previousDimensions.left !== dimensions.left)
         ) {
             const previousCanvas = contextRef.current.getImageData(
-                0,
-                0,
+                previousDimensions.left,
+                previousDimensions.top,
                 previousDimensions.width,
                 previousDimensions.height
             );
             const xScale = dimensions.width / previousDimensions.width;
             const yScale = dimensions.height / previousDimensions.height;
 
-            // canvasRef.current.width = dimensions.width;
-            // canvasRef.current.height = dimensions.height;
+            canvasRef.current.width = dimensions.width;
+            canvasRef.current.height = dimensions.height;
+
             contextRef.current.scale(xScale, yScale);
-            contextRef.current.putImageData(previousCanvas, 0, 0);
+            contextRef.current.putImageData(
+                previousCanvas,
+                dimensions.left,
+                dimensions.top
+            );
         }
 
-        canvasRef.current.width = dimensions.width;
-        canvasRef.current.height = dimensions.height;
         const roughCanvas = rough.canvas(canvasRef.current);
 
         strokes.forEach(s => roughCanvas.draw(s.content));
@@ -83,9 +105,15 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
 
     const startDrawing = useCallback(({ clientX, clientY }) => {
         setDrawing(true);
-        setPoints([ [ clientX, clientY ] ]);
-        contextRef.current.moveTo(clientX, clientY);
-    }, [ contextRef.current ]);
+
+        const { x, y } = getOffsetCoordinates({
+            clientX,
+            clientY
+        });
+
+        setPoints([ [ x, y ] ]);
+        contextRef.current.moveTo(x, y);
+    }, [ contextRef.current, dimensions ]);
 
     const finishDrawing = useCallback(() => {
         dispatch(addStroke(createStroke(), dimensions));
@@ -95,9 +123,14 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
     }, [ dispatch, addStroke, createStroke, dimensions ]);
 
     const draw = useCallback(({ clientX, clientY }, _contextRef, _points) => {
-        _contextRef.current.lineTo(clientX, clientY);
+        const { x, y } = getOffsetCoordinates({
+            clientX,
+            clientY
+        });
+
+        _contextRef.current.lineTo(x, y);
         _contextRef.current.stroke();
-        setPoints([ ..._points, [ clientX, clientY ] ]);
+        setPoints([ ..._points, [ x, y ] ]);
     }, []);
 
     const throttledDraw = useCallback(throttle((e, _contextRef, _points) => {
@@ -106,6 +139,7 @@ const Whiteboard = ({ dimensions, tool }: Props) => {
 
     return (
         <canvas
+            className = { styles.whiteboard }
             height = { dimensions.height }
             onMouseDown = { startDrawing }
             // eslint-disable-next-line react/jsx-no-bind
