@@ -1,4 +1,6 @@
 // @flow
+import rough from 'roughjs/bundled/rough.esm';
+
 import { CONFERENCE_WILL_JOIN, getCurrentConference } from '../base/conference';
 import {
     getLocalParticipant,
@@ -7,7 +9,7 @@ import {
     isLocalParticipantModerator
 } from '../base/participants';
 import { MiddlewareRegistry } from '../base/redux';
-import { setTileView } from '../video-layout';
+import { setTileView, SET_TILE_VIEW } from '../video-layout';
 
 import {
     ADD_STROKE,
@@ -17,7 +19,7 @@ import {
     SYNC_ALL_WHITEBOARDS,
     TOGGLE_WHITEBOARD
 } from './actionTypes';
-import { clearWhiteboard, toggleWhiteboard } from './actions';
+import { clearWhiteboard, setWhiteboardDataUrl, toggleWhiteboard } from './actions';
 import {
     CLEAR_WHITEBOARD_COMMAND,
     ENDPOINT_WHITEBOARD_STROKE_NAME,
@@ -134,6 +136,23 @@ MiddlewareRegistry.register(store => next => action => {
             });
         }
         break;
+    }
+    case SET_TILE_VIEW: {
+        const state = store.getState();
+
+        if (isWhiteboardOn(state)) {
+            const strokes = getWhiteboardStrokes(state);
+            const initialDimensions = getInitialWhiteboardDimensions(state);
+            const canvas = document.createElement('canvas');
+
+            canvas.width = initialDimensions.width;
+            canvas.height = initialDimensions.height;
+            const generator = rough.generator();
+            const roughCanvas = rough.canvas(canvas);
+
+            strokes.forEach(s => roughCanvas.draw(generator.linearPath(s.points)));
+            store.dispatch(setWhiteboardDataUrl(canvas.toDataURL()));
+        }
     }
     }
 

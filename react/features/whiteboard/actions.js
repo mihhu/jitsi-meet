@@ -6,6 +6,7 @@ import {
     CLEAR_WHITEBOARD,
     END_WHITEBOARD,
     SAVE_INITIAL_DIMENSIONS,
+    SET_WHITEBOARD_DATA_URL,
     START_WHITEBOARD,
     SYNC_ALL_WHITEBOARDS,
     TOGGLE_WHITEBOARD
@@ -110,5 +111,18 @@ export function changeColor(color) {
 export function syncAllWhiteboards() {
     return {
         type: SYNC_ALL_WHITEBOARDS
+    };
+}
+
+/**
+ * Sets the data url. ! Fix comment.
+ *
+ * @param {string} dataUrl - Canvas as data url.
+ * @returns {Object}
+ */
+export function setWhiteboardDataUrl(dataUrl) {
+    return {
+        type: SET_WHITEBOARD_DATA_URL,
+        dataUrl
     };
 }

@@ -63,6 +63,9 @@ export const START_WHITEBOARD = 'START_WHITEBOARD';
  */
 export const SAVE_INITIAL_DIMENSIONS = 'SAVE_INITIAL_DIMENSIONS';
 
+// ! add comm
+export const SET_WHITEBOARD_DATA_URL = 'SET_WHITEBOARD_DATA_URL';
+
 /**
  * The type of the action which syncs all participants whiteboards with the local one (moderators only).
  *

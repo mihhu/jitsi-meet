@@ -281,6 +281,23 @@ const defaultStyles = theme => {
             '& .raised-hand-border': {
                 boxShadow: `inset 0px 0px 0px 2px ${theme.palette.warning02} !important`
             }
+        },
+
+        whiteboard: {
+            zIndex: 11,
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            backgroundColor: theme.palette.ui02,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+
+            '&>img': {
+                maxWidth: '100%',
+                maxHeight: '100%',
+                backgroundColor: '#fff'
+            }
         }
     };
 };
@@ -801,6 +818,7 @@ class Thumbnail extends Component<Props, State> {
             _localFlipX,
             _participant,
             _videoTrack,
+            _whiteboardImg,
             classes
         } = this.props;
         const { id } = _participant || {};
@@ -894,6 +912,12 @@ class Thumbnail extends Component<Props, State> {
                 <ThumbnailAudioIndicator _audioTrack = { _audioTrack } />
                 <div className = { clsx(classes.borderIndicator, 'raised-hand-border') } />
                 <div className = { clsx(classes.borderIndicator, 'active-speaker-indicator') } />
+                {console.log('\n\n participant \n\n', _participant.id, _whiteboardImg)}
+                {_whiteboardImg && <div className = { classes.whiteboard }>
+                    <img
+                        alt = 'Whiteboard'
+                        src = { _whiteboardImg } />
+                </div>}
             </span>
         );
     }
@@ -1030,6 +1054,7 @@ function _mapStateToProps(state, ownProps): Object {
         _raisedHand: hasRaisedHand(participant),
         _videoObjectPosition: getVideoObjectPosition(state, participant?.id),
         _videoTrack,
+        _whiteboardImg: participantID === 'whiteboard' && state['features/whiteboard'].dataUrl,
         ...size
     };
 }

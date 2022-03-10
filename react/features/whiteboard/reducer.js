@@ -8,6 +8,7 @@ import {
     CLEAR_WHITEBOARD,
     END_WHITEBOARD,
     SAVE_INITIAL_DIMENSIONS,
+    SET_WHITEBOARD_DATA_URL,
     START_WHITEBOARD,
     TOGGLE_WHITEBOARD
 } from './actionTypes';
@@ -28,6 +29,11 @@ const INITIAL_STATE = {
      * The initial dimensions of the whiteboard.
      */
     dimensions: null,
+
+    /**
+     * Canvas content as dataUrl.
+     */
+    dataUrl: '',
 
     /**
      * The indicator which determines whether the whiteboard mode is on.
@@ -83,6 +89,11 @@ ReducerRegistry.register(
             return {
                 ...state,
                 color: action.color
+            };
+        case SET_WHITEBOARD_DATA_URL:
+            return {
+                ...state,
+                dataUrl: action.dataUrl
             };
         }
 
