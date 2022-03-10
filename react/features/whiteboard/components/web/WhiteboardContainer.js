@@ -52,7 +52,7 @@ const WhiteboardContainer = () => {
             <Whiteboard
                 dimensions = { dimensions }
                 tool = { 'penciel' } />
-            <WhiteboardToolbar />
+            <WhiteboardToolbar height = { dimensions.height } />
         </div>
     );
 };
