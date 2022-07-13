@@ -23,6 +23,7 @@ import { ITestingState } from '../base/testing/reducer';
 import { INoSrcDataState, ITracksState } from '../base/tracks/reducer';
 import { IUserInteractionState } from '../base/user-interaction/reducer';
 import { INoiseSuppressionState } from '../noise-suppression/reducer';
+import { IWhiteboardState } from '../whiteboard/reducer';
 
 export interface IStore {
     dispatch: Function,
@@ -56,5 +57,6 @@ export interface IState {
     'features/base/tracks': ITracksState,
     'features/base/user-interaction': IUserInteractionState,
     'features/noise-suppression': INoiseSuppressionState,
-    'features/testing': ITestingState
+    'features/testing': ITestingState,
+    'features/whiteboard': IWhiteboardState
 }

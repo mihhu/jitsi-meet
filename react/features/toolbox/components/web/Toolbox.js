@@ -74,6 +74,7 @@ import {
 import { VideoQualityDialog, VideoQualityButton } from '../../../video-quality/components';
 import { VideoBackgroundButton, toggleBackgroundEffect } from '../../../virtual-background';
 import { VIRTUAL_BACKGROUND_TYPE } from '../../../virtual-background/constants';
+import WhiteboardButton from '../../../whiteboard/components/WhiteboardButton';
 import {
     setFullScreen,
     setOverflowMenuVisible,
@@ -769,6 +770,12 @@ class Toolbox extends Component<Props> {
         };
 
 
+        const whiteboard = {
+            key: 'whiteboard',
+            Content: WhiteboardButton,
+            group: 3
+        };
+
         const etherpad = {
             key: 'etherpad',
             Content: SharedDocumentButton,
@@ -856,6 +863,7 @@ class Toolbox extends Component<Props> {
             shareVideo,
             shareAudio,
             noiseSuppression,
+            whiteboard,
             etherpad,
             virtualBackground,
             dockIframe,

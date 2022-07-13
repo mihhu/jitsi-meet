@@ -12,6 +12,7 @@ import { getVerticalViewMaxWidth } from '../../filmstrip/functions.web';
 import { SharedVideo } from '../../shared-video/components/web';
 import { Captions } from '../../subtitles/';
 import { setTileView } from '../../video-layout/actions';
+import Whiteboard from '../../whiteboard';
 
 declare var interfaceConfig: Object;
 
@@ -137,6 +138,7 @@ class LargeVideo extends Component<Props> {
                 id = 'largeVideoContainer'
                 ref = { this._containerRef }
                 style = { style }>
+                <Whiteboard />
                 <SharedVideo />
                 <div id = 'etherpad' />
 

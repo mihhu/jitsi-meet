@@ -1112,7 +1112,8 @@
             "toggleFilmstrip": "Toggle filmstrip",
             "undock": "Undock into separate window",
             "videoblur": "Toggle video blur",
-            "videomute": "Start / Stop camera"
+            "videomute": "Start / Stop camera",
+            "whiteboard": "Enable / Disable whiteboard"
         },
         "addPeople": "Add people to your call",
         "audioOnlyOff": "Disable low bandwidth mode",
@@ -1200,7 +1201,9 @@
         "toggleCamera": "Toggle camera",
         "undock": "Undock into separate window",
         "videoSettings": "Video settings",
-        "videomute": "Start / Stop camera"
+        "videomute": "Start / Stop camera",
+        "whiteboard": "Enable whiteboard",
+        "whiteboardEnabled": "Disable whiteboard"
     },
     "transcribing": {
         "ccButtonTooltip": "Start / Stop subtitles",
