@@ -2,6 +2,7 @@
 /* eslint-disable require-jsdoc */
 
 import { batch } from 'react-redux';
+import { generateCollaborationLinkData } from '@excalidraw/excalidraw';
 
 // @ts-ignore
 import { IStore } from '../app/types';
@@ -26,9 +27,12 @@ import { CONFERENCE_JOIN_IN_PROGRESS } from '../base/conference/actionTypes';
 import { MiddlewareRegistry, StateListenerRegistry } from '../base/redux';
 
 import { TOGGLE_WHITEBOARD } from './actionTypes';
-import { getWhiteboardId, isWhiteboardEnabled } from './functions';
-import { WHITEBOARD, WHITEBOARD_PARTICIPANT_NAME } from './constants';
-import { disableWhiteboard, enableWhiteboard } from './actions';
+import { getCollabLink, getWhiteboardId, isWhiteboardEnabled } from './functions';
+import { WHITEBOARD, WHITEBOARD_PARTICIPANT_NAME, WHITEBOARD_STORAGE_KEY } from './constants';
+import { disableWhiteboard, enableWhiteboard, setUsernameStatus } from './actions';
+import { PARTICIPANT_UPDATED } from '../base/participants/actionTypes';
+
+declare let APP: any;
 
 /**
  * Middleware which intercepts whiteboard actions to handle changes to the related state.
@@ -36,7 +40,7 @@ import { disableWhiteboard, enableWhiteboard } from './actions';
  * @param {Store} store - The redux store.
  * @returns {Function}
  */
-MiddlewareRegistry.register((store: IStore) => (next: Function) => (action: any) => {
+MiddlewareRegistry.register((store: IStore) => (next: Function) => async (action: any) => {
     const { dispatch, getState } = store;
     const state = getState();
     const localParticipantId = getLocalParticipant(state)?.id;
@@ -45,9 +49,18 @@ MiddlewareRegistry.register((store: IStore) => (next: Function) => (action: any)
     case TOGGLE_WHITEBOARD: {
         const conference = getCurrentConference(state);
         const isEnabled = isWhiteboardEnabled(state);
+        let collabLink = null;
+
+        if (!isEnabled) {
+            collabLink = localParticipantId === action.participantId
+                ? await generateCollaborationLinkData()
+                : getCollabLink(state);
+        }
 
         dispatch(setTileView(false));
         sendWhiteboardCommand({
+            roomId: collabLink?.roomId,
+            roomKey: collabLink?.roomKey,
             conference,
             participantId: localParticipantId,
             whiteboardId: action.id,
@@ -63,6 +76,23 @@ MiddlewareRegistry.register((store: IStore) => (next: Function) => (action: any)
         conference.addCommandListener(WHITEBOARD, ({ value, attributes }) => {
             handleWhiteboardStatus(store, conference, value, attributes);
         });
+        break;
+    } // TODO: cleanup PARTICIPANT_DISPLAY_NAME_CHANGED
+    case PARTICIPANT_UPDATED: {
+        if (typeof APP !== 'undefined') {
+            const participant = getLocalParticipant(store.getState());
+
+            if (participant
+                && participant.id === action.participant.id
+                && action.participant.name
+                && participant.name !== action.participant.name) {
+                localStorage.setItem(
+                    WHITEBOARD_STORAGE_KEY,
+                    JSON.stringify({ username: action.participant.name })
+                );
+                dispatch(setUsernameStatus('NEW')); // TODO: make enum
+            }
+        }
         break;
     }
     case PARTICIPANT_LEFT: {
@@ -108,14 +138,21 @@ StateListenerRegistry.register(
  */
 
 // @ts-ignore
-function handleWhiteboardStatus(store: IStore, conference, whiteboardId: string, { isEnabled }) {
-    const { dispatch } = store;
+function handleWhiteboardStatus(store: IStore, conference, whiteboardId: string, { isEnabled, roomId, roomKey, from }) {
+    const { dispatch, getState } = store;
 
     if (isEnabled === 'false') {
         dispatch(participantLeft(whiteboardId, conference));
 
         return;
     }
+
+    const username = getLocalParticipant(getState())?.name;
+
+    localStorage.setItem(
+        WHITEBOARD_STORAGE_KEY,
+        JSON.stringify({ username })
+    );
 
     batch(() => {
         dispatch(participantJoined({
@@ -125,7 +162,14 @@ function handleWhiteboardStatus(store: IStore, conference, whiteboardId: string,
             name: WHITEBOARD_PARTICIPANT_NAME
         }));
         dispatch(pinParticipant(whiteboardId));
-        dispatch(enableWhiteboard({ id: whiteboardId }));
+        dispatch(enableWhiteboard({
+            id: whiteboardId,
+            participantId: from,
+            collabLink: {
+                roomId,
+                roomKey
+            }
+        }));
     });
 }
 
@@ -135,10 +179,12 @@ function handleWhiteboardStatus(store: IStore, conference, whiteboardId: string,
  * @returns {void}
  */
 // @ts-ignore
-const sendWhiteboardCommand = ({ conference, whiteboardId, participantId, isEnabled }): void => {
+const sendWhiteboardCommand = ({ conference, whiteboardId, participantId, isEnabled, roomId, roomKey }): void => {
     conference.sendCommandOnce(WHITEBOARD, {
         value: whiteboardId,
         attributes: {
+            roomId,
+            roomKey,
             from: participantId,
             isEnabled
         }

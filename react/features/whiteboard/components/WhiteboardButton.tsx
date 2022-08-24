@@ -7,6 +7,8 @@ import { translate } from '../../base/i18n';
 // @ts-ignore
 import { IconShareAudio, IconStopAudioShare } from '../../base/icons';
 // @ts-ignore
+import { getLocalParticipant } from '../../base/participants';
+// @ts-ignore
 import { connect } from '../../base/redux';
 // @ts-ignore
 import { AbstractButton, type AbstractButtonProps } from '../../base/toolbox/components';
@@ -50,10 +52,14 @@ class WhiteboardButton extends AbstractButton<Props, any, any> {
     _handleClick() {
 
         // @ts-ignore
-        const { dispatch, _enabled, _id } = this.props;
+        const { dispatch, _enabled, _id, _localParticipantId } = this.props;
         const id = _enabled ? _id : `whiteboard-${Date.now()}`;
+        const participantId = _localParticipantId;
 
-        dispatch(toggleWhiteboard({ id }));
+        dispatch(toggleWhiteboard({
+            id,
+            participantId
+        }));
         dispatch(setOverflowMenuVisible(false));
     }
 
@@ -81,7 +87,8 @@ function _mapStateToProps(state: Object) {
 
     return {
         _enabled: isWhiteboardEnabled(state),
-        _id: getWhiteboardId(state)
+        _id: getWhiteboardId(state),
+        _localParticipantId: getLocalParticipant(state).id
     };
 }
 

@@ -2,9 +2,11 @@
 import { ReducerRegistry } from '../base/redux';
 
 // @ts-ignore
-import { DISABLE_WHITEBOARD, ENABLE_WHITEBOARD } from './actionTypes';
+import { DISABLE_WHITEBOARD, ENABLE_WHITEBOARD, SET_USERNAME_STATUS } from './actionTypes';
 
 export interface IWhiteboardState {
+
+    collabLink: { roomId: string; roomKey: string }|null,
 
     /**
      * The indicator which determines whether the whiteboard mode is on.
@@ -18,25 +20,35 @@ export interface IWhiteboardState {
      *
      * @type {string|null}
      */
-    id: string|null
+    id: string|null,
+
+    participantId: string|null
 }
 
 const DEFAULT_STATE: IWhiteboardState = {
+    collabLink: null,
     enabled: false,
-    id: null
+    id: null,
+    participantId: null
 };
 
 export interface WhiteboardAction extends Partial<IWhiteboardState> {
+
+    collabLink: { roomId: string; roomKey: string },
 
     /**
      * The whiteboard id.
      */
     id: string,
 
+    participantId: string|null,
+
     /**
      * The action type.
      */
-    type: string
+    type: string,
+
+    usernameStatus: string // TODO: change to enum
 }
 
 ReducerRegistry.register(
@@ -47,13 +59,21 @@ ReducerRegistry.register(
             return {
                 ...state,
                 enabled: true,
-                id: action.id
+                id: action.id,
+                participantId: action.participantId,
+                collabLink: action.collabLink
             };
         case DISABLE_WHITEBOARD:
             return {
                 ...state,
                 enabled: false,
-                id: null
+                id: null,
+                participantId: null
+            };
+        case SET_USERNAME_STATUS:
+            return {
+                ...state,
+                usernameStatus: action.usernameStatus
             };
         }
 

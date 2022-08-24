@@ -5,6 +5,7 @@ LIBJITSIMEET_DIR = node_modules/lib-jitsi-meet
 OLM_DIR = node_modules/@matrix-org/olm
 TF_WASM_DIR = node_modules/@tensorflow/tfjs-backend-wasm/dist/
 RNNOISE_WASM_DIR = node_modules/@jitsi/rnnoise-wasm/dist
+EXCALIDRAW_DIR = node_modules/@excalidraw/excalidraw/dist
 TFLITE_WASM = react/features/stream-effects/virtual-background/vendor/tflite
 MEET_MODELS_DIR  = react/features/stream-effects/virtual-background/vendor/models
 FACE_MODELS_DIR = node_modules/@vladmandic/human-models/models
@@ -26,7 +27,7 @@ clean:
 	rm -fr $(BUILD_DIR)
 
 .NOTPARALLEL:
-deploy: deploy-init deploy-appbundle deploy-rnnoise-binary deploy-tflite deploy-meet-models deploy-lib-jitsi-meet deploy-olm deploy-tf-wasm deploy-css deploy-local deploy-face-landmarks
+deploy: deploy-init deploy-appbundle deploy-rnnoise-binary deploy-excalidraw deploy-tflite deploy-meet-models deploy-lib-jitsi-meet deploy-olm deploy-tf-wasm deploy-css deploy-local deploy-face-landmarks
 
 deploy-init:
 	rm -fr $(DEPLOY_DIR)
@@ -86,6 +87,11 @@ deploy-tflite:
 		$(TFLITE_WASM)/*.wasm \
 		$(DEPLOY_DIR)
 
+deploy-excalidraw:
+	cp -R \
+		$(EXCALIDRAW_DIR)/* \
+		$(DEPLOY_DIR)
+
 deploy-meet-models:
 	cp \
 		$(MEET_MODELS_DIR)/*.tflite \
@@ -108,7 +114,7 @@ deploy-local:
 	([ ! -x deploy-local.sh ] || ./deploy-local.sh)
 
 .NOTPARALLEL:
-dev: deploy-init deploy-css deploy-rnnoise-binary deploy-tflite deploy-meet-models deploy-lib-jitsi-meet deploy-olm deploy-tf-wasm deploy-face-landmarks
+dev: deploy-init deploy-css deploy-rnnoise-binary deploy-tflite deploy-meet-models deploy-lib-jitsi-meet deploy-olm deploy-tf-wasm deploy-excalidraw deploy-face-landmarks
 	$(WEBPACK_DEV_SERVER)
 
 source-package:

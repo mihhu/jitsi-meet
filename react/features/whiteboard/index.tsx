@@ -1,9 +1,12 @@
 /* eslint-disable import/order */
 /* eslint-disable lines-around-comment */
 
-import { Excalidraw } from '@excalidraw/excalidraw';
-import React, { useRef } from 'react';
-import { useSelector } from 'react-redux';
+/* eslint-ignore */
+// @ts-ignore
+import { ExcalidrawApp } from '@excalidraw/excalidraw';
+
+import React, { useCallback, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import clsx from 'clsx';
 
 // @ts-ignore
@@ -13,10 +16,13 @@ import { getVerticalViewMaxWidth } from '../filmstrip/functions.web';
 // @ts-ignore
 import { getToolboxHeight } from '../toolbox/functions.web';
 // @ts-ignore
-import { shouldDisplayWhiteboard } from './functions';
+import { getCollabLink, getUsernameStatus, shouldDisplayWhiteboard } from './functions';
 // @ts-ignore
 import { shouldDisplayTileView } from '../video-layout/functions.any';
 
+import { setUsernameStatus } from './actions';
+// @ts-ignore
+import { getLocalParticipant } from '../base/participants';
 
 const HEIGHT_OFFSET = 80;
 
@@ -38,12 +44,27 @@ interface IDimensions {
  */
 const Whiteboard: () => JSX.Element = () => {
     const excalidrawRef = useRef<any>(null);
+    const collabAPIRef = useRef<any>(null);
+    const dispatch = useDispatch();
 
     const shouldDisplay = useSelector(shouldDisplayWhiteboard);
     const isInTileView = useSelector(shouldDisplayTileView);
     const { clientHeight, clientWidth } = useSelector((state: any) => state['features/base/responsive-ui']);
     const { visible: filmstripVisible, isResizing } = useSelector((state: any) => state['features/filmstrip']);
     const filmstripWidth: number = useSelector(getVerticalViewMaxWidth);
+    const collabLink = useSelector(getCollabLink);
+    // @ts-ignore
+    const localParticipantName: string = useSelector(getLocalParticipant).name;
+    const usernameStatus = useSelector(getUsernameStatus);
+
+    useEffect(() => {
+        if (!collabAPIRef.current || usernameStatus !== 'NEW') {
+            return;
+        }
+
+        collabAPIRef.current.setUsername(localParticipantName);
+        dispatch(setUsernameStatus('UPDATED'));
+    }, [ usernameStatus ]);
 
     /**
     * Computes the width and the height of the component.
@@ -76,6 +97,13 @@ const Whiteboard: () => JSX.Element = () => {
         };
     };
 
+    const getCollabAPI = useCallback(collabAPI => {
+        if (collabAPIRef.current) {
+            return;
+        }
+        collabAPIRef.current = collabAPI;
+    }, []);
+
     return (
         <div
             className = { clsx(isResizing && 'disable-pointer', 'whiteboard-container') }
@@ -87,10 +115,17 @@ const Whiteboard: () => JSX.Element = () => {
             {
                 shouldDisplay && (
                     <div className = 'excalidraw-wrapper'>
-                        <Excalidraw
-                            isCollaborating = { true }
-                            ref = { excalidrawRef }
-                            theme = 'dark' />
+                        <ExcalidrawApp
+                            collabLink = { collabLink }
+                            collabUrl = 'https://oss-collab-us2.excalidraw.com'
+                            excalidraw = {{
+                                hideUserList: true,
+                                isCollaborating: true,
+                                // @ts-ignore
+                                ref: excalidrawRef,
+                                theme: 'dark'
+                            }}
+                            getCollabAPI = { getCollabAPI } />
                     </div>
                 )
             }
