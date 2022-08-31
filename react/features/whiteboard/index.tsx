@@ -119,11 +119,12 @@ const Whiteboard: () => JSX.Element = () => {
                             collabLink = { collabLink }
                             collabUrl = 'https://oss-collab-us2.excalidraw.com'
                             excalidraw = {{
+                                // hideLibraries: true,
                                 hideUserList: true,
                                 isCollaborating: true,
                                 // @ts-ignore
                                 ref: excalidrawRef,
-                                theme: 'dark'
+                                theme: 'dark',
                             }}
                             getCollabAPI = { getCollabAPI } />
                     </div>

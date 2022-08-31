@@ -52,15 +52,15 @@ MiddlewareRegistry.register((store: IStore) => (next: Function) => async (action
         let collabLink = null;
 
         if (!isEnabled) {
-            collabLink = localParticipantId === action.participantId
+            collabLink = getCollabLink(state);
+            collabLink = !collabLink
                 ? await generateCollaborationLinkData()
-                : getCollabLink(state);
+                : collabLink;
         }
 
         dispatch(setTileView(false));
         sendWhiteboardCommand({
-            roomId: collabLink?.roomId,
-            roomKey: collabLink?.roomKey,
+            ...(collabLink ? { roomId: collabLink?.roomId, roomKey: collabLink?.roomKey } : {}),
             conference,
             participantId: localParticipantId,
             whiteboardId: action.id,
@@ -147,6 +147,11 @@ function handleWhiteboardStatus(store: IStore, conference, whiteboardId: string,
         return;
     }
 
+    const isAlreadyEnabled = isWhiteboardEnabled(getState());
+    if (isAlreadyEnabled) {
+        return;
+    }
+
     const username = getLocalParticipant(getState())?.name;
 
     localStorage.setItem(
@@ -179,7 +184,14 @@ function handleWhiteboardStatus(store: IStore, conference, whiteboardId: string,
  * @returns {void}
  */
 // @ts-ignore
-const sendWhiteboardCommand = ({ conference, whiteboardId, participantId, isEnabled, roomId, roomKey }): void => {
+const sendWhiteboardCommand = ({ conference, whiteboardId, participantId, isEnabled, roomId, roomKey }: {
+    conference: any,
+    whiteboardId: string,
+    participantId?: string,
+    isEnabled: boolean,
+    roomId?:string,
+    roomKey?: string
+}): void => {
     conference.sendCommandOnce(WHITEBOARD, {
         value: whiteboardId,
         attributes: {
