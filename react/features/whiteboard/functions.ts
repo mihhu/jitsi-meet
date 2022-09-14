@@ -1,5 +1,6 @@
 // @ts-ignore
 import { getPinnedParticipant } from '../../features/base/participants';
+import { appendURLParam } from '../base/util/uri';
 
 const getWhiteboardState = (state: any): any => state['features/whiteboard'];
 
@@ -33,7 +34,17 @@ export const getWhiteboardParticipantId = (state: any): string|null => getWhiteb
  * @param {Object} state - The state from the Redux store.
  * @returns {{ roomId: string, roomKey: string}|null}
  */
-export const getCollabLink = (state: any): any => getWhiteboardState(state).collabLink;
+export const getCollabLink = (state: any): {
+    roomId: string, roomKey: string
+} => getWhiteboardState(state).collabLink || {};
+
+export const getCollabServerUrl = (state: any): string => {
+    const { roomId, roomKey } = getCollabLink(state);
+    const collabServerBaseUrl = state['feat/base/config'].whiteboard?.collabServerBaseUrl
+    || 'https://excalidraw-backend-pilot.jitsi.net'; // TODO: remove
+
+    return appendURLParam(collabServerBaseUrl, 'room', `${roomId},${roomKey}`);
+};
 
 /**
  * Whether the whiteboard should be visible.

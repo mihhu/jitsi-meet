@@ -1,5 +1,4 @@
 /* eslint-disable arrow-body-style */
-/* eslint-disable valid-jsdoc */ // TODO: fix
 import {
     DISABLE_WHITEBOARD,
     ENABLE_WHITEBOARD,
@@ -24,11 +23,13 @@ export const disableWhiteboard = (): any => ({ type: DISABLE_WHITEBOARD });
  *     type: ENABLE_WHITEBOARD,
  *     id: string,
  *     participantId: string,
- *     collabLink: { roomId: string; roomKey: string }
+ *     collabLink: { roomId: string, roomKey: string }
  * }}
  */
 export const enableWhiteboard = ({ id, participantId, collabLink }: {
-    id: string, participantId: string, collabLink: { roomId: string; roomKey: string }
+    collabLink: { roomId: string, roomKey: string },
+    id: string,
+    participantId: string
 }): any => ({
     type: ENABLE_WHITEBOARD,
     id,

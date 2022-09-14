@@ -3,19 +3,19 @@
 import type { Dispatch } from 'redux';
 
 // @ts-ignore
-import { translate } from '../../base/i18n';
+import { translate } from '../../../base/i18n';
 // @ts-ignore
-import { IconShareAudio, IconStopAudioShare } from '../../base/icons';
+import { IconShareAudio, IconStopAudioShare } from '../../../base/icons';
 // @ts-ignore
-import { getLocalParticipant } from '../../base/participants';
+import { getLocalParticipant } from '../../../base/participants';
 // @ts-ignore
-import { connect } from '../../base/redux';
+import { connect } from '../../../base/redux';
 // @ts-ignore
-import { AbstractButton, type AbstractButtonProps } from '../../base/toolbox/components';
+import { AbstractButton, type AbstractButtonProps } from '../../../base/toolbox/components';
 // @ts-ignore
-import { setOverflowMenuVisible } from '../../toolbox/actions.web';
-import { toggleWhiteboard } from '../actions';
-import { getWhiteboardId, isWhiteboardEnabled } from '../functions';
+import { setOverflowMenuVisible } from '../../../toolbox/actions.web';
+import { toggleWhiteboard } from '../../actions';
+import { getWhiteboardId, isWhiteboardEnabled } from '../../functions';
 
 
 type Props = AbstractButtonProps & {
@@ -23,13 +23,13 @@ type Props = AbstractButtonProps & {
     /**
      * Whether or not the whiteboard is enabled.
      */
-    _enabled: boolean
+    _enabled: boolean,
 
     /**
      * The redux {@code dispatch} function.
      */
-    // @ts-ignore
-    dispatch: Dispatch<any>,
+// @ts-ignore
+    dispatch: Dispatch<any>
 }
 
 /**

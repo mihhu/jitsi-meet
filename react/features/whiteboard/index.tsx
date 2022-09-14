@@ -16,7 +16,7 @@ import { getVerticalViewMaxWidth } from '../filmstrip/functions.web';
 // @ts-ignore
 import { getToolboxHeight } from '../toolbox/functions.web';
 // @ts-ignore
-import { getCollabLink, getUsernameStatus, shouldDisplayWhiteboard } from './functions';
+import { getCollabLink, getCollabServerUrl, getUsernameStatus, shouldDisplayWhiteboard } from './functions';
 // @ts-ignore
 import { shouldDisplayTileView } from '../video-layout/functions.any';
 
@@ -53,6 +53,7 @@ const Whiteboard: () => JSX.Element = () => {
     const { visible: filmstripVisible, isResizing } = useSelector((state: any) => state['features/filmstrip']);
     const filmstripWidth: number = useSelector(getVerticalViewMaxWidth);
     const collabLink = useSelector(getCollabLink);
+    const collabServerUrl = useSelector(getCollabServerUrl);
     // @ts-ignore
     const localParticipantName: string = useSelector(getLocalParticipant).name;
     const usernameStatus = useSelector(getUsernameStatus);
@@ -117,10 +118,10 @@ const Whiteboard: () => JSX.Element = () => {
                     <div className = 'excalidraw-wrapper'>
                         <ExcalidrawApp
                             collabLink = { collabLink }
-                            collabUrl = 'https://oss-collab-us2.excalidraw.com'
+                            collabServerUrl = { collabServerUrl }
                             excalidraw = {{
-                                hideIOActions: true,
                                 hideLibraries: true,
+                                hideLockButton: true,
                                 hideUserList: true,
                                 isCollaborating: true,
                                 // @ts-ignore

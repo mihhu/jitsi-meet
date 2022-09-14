@@ -1455,4 +1455,10 @@ var config = {
     //     // How long the GIF should be displayed on the tile (in miliseconds).
     //     tileTime: 5000,
     // },
+
+    // Settings for the Excalidraw whiteboard integration.
+    // whiteboard: {
+    //     // The server used to support whiteboard collaboration.
+    //     collabServerBaseUrl: 'https://excalidraw-backend.example.com',
+    // },
 };

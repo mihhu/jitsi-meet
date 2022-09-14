@@ -32,6 +32,9 @@ import { WHITEBOARD, WHITEBOARD_PARTICIPANT_NAME, WHITEBOARD_STORAGE_KEY } from 
 import { disableWhiteboard, enableWhiteboard, setUsernameStatus } from './actions';
 import { PARTICIPANT_UPDATED } from '../base/participants/actionTypes';
 
+// @ts-ignore
+import getRoomName from '../base/config/getRoomName';
+
 declare let APP: any;
 
 /**
@@ -52,15 +55,15 @@ MiddlewareRegistry.register((store: IStore) => (next: Function) => async (action
         let collabLink = null;
 
         if (!isEnabled) {
-            collabLink = getCollabLink(state);
-            collabLink = !collabLink
-                ? await generateCollaborationLinkData()
-                : collabLink;
+            collabLink = getCollabLink(state) || await generateCollaborationLinkData();
         }
 
         dispatch(setTileView(false));
         sendWhiteboardCommand({
-            ...(collabLink ? { roomId: collabLink?.roomId, roomKey: collabLink?.roomKey } : {}),
+            ...collabLink ? {
+                roomId: getRoomName(state),
+                roomKey: collabLink?.roomKey
+            } : {},
             conference,
             participantId: localParticipantId,
             whiteboardId: action.id,
@@ -121,7 +124,6 @@ StateListenerRegistry.register(
     (conference, { dispatch }, previousConference): void => {
         if (previousConference) {
 
-            // TODO: clear whiteboard content too
             dispatch(disableWhiteboard());
         }
     });
@@ -148,6 +150,7 @@ function handleWhiteboardStatus(store: IStore, conference, whiteboardId: string,
     }
 
     const isAlreadyEnabled = isWhiteboardEnabled(getState());
+
     if (isAlreadyEnabled) {
         return;
     }
@@ -184,13 +187,20 @@ function handleWhiteboardStatus(store: IStore, conference, whiteboardId: string,
  * @returns {void}
  */
 // @ts-ignore
-const sendWhiteboardCommand = ({ conference, whiteboardId, participantId, isEnabled, roomId, roomKey }: {
+const sendWhiteboardCommand = ({
+    conference,
+    isEnabled,
+    roomId,
+    roomKey,
+    participantId,
+    whiteboardId
+}: {
     conference: any,
-    whiteboardId: string,
-    participantId?: string,
     isEnabled: boolean,
+    participantId?: string,
     roomId?:string,
-    roomKey?: string
+    roomKey?: string,
+    whiteboardId: string
 }): void => {
     conference.sendCommandOnce(WHITEBOARD, {
         value: whiteboardId,

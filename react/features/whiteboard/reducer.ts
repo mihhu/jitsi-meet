@@ -6,6 +6,9 @@ import { DISABLE_WHITEBOARD, ENABLE_WHITEBOARD, SET_USERNAME_STATUS } from './ac
 
 export interface IWhiteboardState {
 
+    /**
+     * The whiteboard collaboration details.
+     */
     collabLink: { roomId: string; roomKey: string }|null,
 
     /**
