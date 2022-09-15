@@ -2,7 +2,7 @@
 /* eslint-disable require-jsdoc */
 
 import { batch } from 'react-redux';
-import { generateCollaborationLinkData } from '@excalidraw/excalidraw';
+import { generateCollaborationLinkData } from '@jitsi/excalidraw';
 
 // @ts-ignore
 import { IStore } from '../app/types';
@@ -27,13 +27,13 @@ import { CONFERENCE_JOIN_IN_PROGRESS } from '../base/conference/actionTypes';
 import { MiddlewareRegistry, StateListenerRegistry } from '../base/redux';
 
 import { TOGGLE_WHITEBOARD } from './actionTypes';
-import { getCollabLink, getWhiteboardId, isWhiteboardEnabled } from './functions';
-import { WHITEBOARD, WHITEBOARD_PARTICIPANT_NAME, WHITEBOARD_STORAGE_KEY } from './constants';
+import { getCollabLink, getWhiteboardId, isWhiteboardOpen } from './functions';
+import { USERNAME_UPDATE_STATUS, WHITEBOARD, WHITEBOARD_PARTICIPANT_NAME, WHITEBOARD_STORAGE_KEY } from './constants';
 import { disableWhiteboard, enableWhiteboard, setUsernameStatus } from './actions';
 import { PARTICIPANT_UPDATED } from '../base/participants/actionTypes';
 
 // @ts-ignore
-import getRoomName from '../base/config/getRoomName';
+import { getCurrentRoomId } from '../breakout-rooms/functions';
 
 declare let APP: any;
 
@@ -51,17 +51,21 @@ MiddlewareRegistry.register((store: IStore) => (next: Function) => async (action
     switch (action.type) {
     case TOGGLE_WHITEBOARD: {
         const conference = getCurrentConference(state);
-        const isEnabled = isWhiteboardEnabled(state);
+        const isEnabled = isWhiteboardOpen(state);
         let collabLink = null;
 
         if (!isEnabled) {
-            collabLink = getCollabLink(state) || await generateCollaborationLinkData();
+            collabLink = getCollabLink(state);
+
+            if (!Object.keys(collabLink).length) {
+                collabLink = await generateCollaborationLinkData();
+            }
         }
 
         dispatch(setTileView(false));
         sendWhiteboardCommand({
             ...collabLink ? {
-                roomId: getRoomName(state),
+                roomId: getCurrentRoomId(state),
                 roomKey: collabLink?.roomKey
             } : {},
             conference,
@@ -93,7 +97,7 @@ MiddlewareRegistry.register((store: IStore) => (next: Function) => async (action
                     WHITEBOARD_STORAGE_KEY,
                     JSON.stringify({ username: action.participant.name })
                 );
-                dispatch(setUsernameStatus('NEW')); // TODO: make enum
+                dispatch(setUsernameStatus(USERNAME_UPDATE_STATUS.NEW));
             }
         }
         break;
@@ -149,7 +153,7 @@ function handleWhiteboardStatus(store: IStore, conference, whiteboardId: string,
         return;
     }
 
-    const isAlreadyEnabled = isWhiteboardEnabled(getState());
+    const isAlreadyEnabled = isWhiteboardOpen(getState());
 
     if (isAlreadyEnabled) {
         return;

@@ -1,16 +1,22 @@
+/* eslint-disable import/order */
+import md5 from 'js-md5';
+
 // @ts-ignore
 import { getPinnedParticipant } from '../../features/base/participants';
 import { appendURLParam } from '../base/util/uri';
 
+// @ts-ignore
+import { getCurrentRoomId, isInBreakoutRoom } from '../breakout-rooms/functions';
+
 const getWhiteboardState = (state: any): any => state['features/whiteboard'];
 
 /**
- * Indicates whether the whiteboard is enabled.
+ * Indicates whether the whiteboard is open.
  *
  * @param {Object} state - The state from the Redux store.
  * @returns {boolean}
  */
-export const isWhiteboardEnabled = (state: any): boolean => getWhiteboardState(state).enabled;
+export const isWhiteboardOpen = (state: any): boolean => getWhiteboardState(state).enabled;
 
 /**
  * Returns the whiteboard id.
@@ -39,12 +45,18 @@ export const getCollabLink = (state: any): {
 } => getWhiteboardState(state).collabLink || {};
 
 export const getCollabServerUrl = (state: any): string => {
-    const { roomId, roomKey } = getCollabLink(state);
-    const collabServerBaseUrl = state['feat/base/config'].whiteboard?.collabServerBaseUrl
-    || 'https://excalidraw-backend-pilot.jitsi.net'; // TODO: remove
+    const collabServerBaseUrl = state['features/base/config'].whiteboard?.collabServerBaseUrl
+    || 'https://excalidraw-backend-pilot.jitsi.net'; // TODO: remove default
 
-    return appendURLParam(collabServerBaseUrl, 'room', `${roomId},${roomKey}`);
+    const inBreakoutRoom = isInBreakoutRoom(state);
+    const roomId = getCurrentRoomId(state);
+    const room = md5.hex(`${window.location.href}${inBreakoutRoom ? `|${roomId}` : ''}`);
+
+    return appendURLParam(collabServerBaseUrl, 'room', room); // TODO: native with getInviteURL
 };
+
+// TODO: remove negation
+export const isWhiteboardEnabled = (state: any): boolean => !state['features/base/config'].whiteboard?.enabled;
 
 /**
  * Whether the whiteboard should be visible.
@@ -52,8 +64,9 @@ export const getCollabServerUrl = (state: any): string => {
  * @param {Object} state - The state from the Redux store.
  * @returns {boolean}
  */
-export const shouldDisplayWhiteboard = (state: any): boolean =>
+export const isWhiteboardVisible = (state: any): boolean =>
     isWhiteboardEnabled(state)
+    && isWhiteboardOpen(state)
     && getPinnedParticipant(state)?.id === getWhiteboardId(state);
 
 /**

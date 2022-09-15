@@ -1458,6 +1458,8 @@ var config = {
 
     // Settings for the Excalidraw whiteboard integration.
     // whiteboard: {
+    //     // Whether the feature is enabled or not.
+    //     enabled: true,
     //     // The server used to support whiteboard collaboration.
     //     collabServerBaseUrl: 'https://excalidraw-backend.example.com',
     // },

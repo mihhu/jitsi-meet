@@ -1,5 +1,4 @@
 /* eslint-disable lines-around-comment */
-
 import type { Dispatch } from 'redux';
 
 // @ts-ignore
@@ -15,15 +14,15 @@ import { AbstractButton, type AbstractButtonProps } from '../../../base/toolbox/
 // @ts-ignore
 import { setOverflowMenuVisible } from '../../../toolbox/actions.web';
 import { toggleWhiteboard } from '../../actions';
-import { getWhiteboardId, isWhiteboardEnabled } from '../../functions';
+import { getWhiteboardId, isWhiteboardOpen } from '../../functions';
 
 
 type Props = AbstractButtonProps & {
 
     /**
-     * Whether or not the whiteboard is enabled.
+     * Whether or not the whiteboard is open.
      */
-    _enabled: boolean,
+    _open: boolean,
 
     /**
      * The redux {@code dispatch} function.
@@ -52,8 +51,8 @@ class WhiteboardButton extends AbstractButton<Props, any, any> {
     _handleClick() {
 
         // @ts-ignore
-        const { dispatch, _enabled, _id, _localParticipantId } = this.props;
-        const id = _enabled ? _id : `whiteboard-${Date.now()}`;
+        const { dispatch, _open, _id, _localParticipantId } = this.props;
+        const id = _open ? _id : `whiteboard-${Date.now()}`;
         const participantId = _localParticipantId;
 
         dispatch(toggleWhiteboard({
@@ -72,7 +71,7 @@ class WhiteboardButton extends AbstractButton<Props, any, any> {
      */
     _isToggled() {
         // @ts-ignore
-        return this.props._enabled;
+        return this.props._open;
     }
 }
 
@@ -86,7 +85,7 @@ class WhiteboardButton extends AbstractButton<Props, any, any> {
 function _mapStateToProps(state: Object) {
 
     return {
-        _enabled: isWhiteboardEnabled(state),
+        _open: isWhiteboardOpen(state),
         _id: getWhiteboardId(state),
         _localParticipantId: getLocalParticipant(state).id
     };

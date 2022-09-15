@@ -51,7 +51,7 @@ export interface WhiteboardAction extends Partial<IWhiteboardState> {
      */
     type: string,
 
-    usernameStatus: string // TODO: change to enum
+    usernameStatus: string
 }
 
 ReducerRegistry.register(

@@ -3,7 +3,7 @@
 
 /* eslint-ignore */
 // @ts-ignore
-import { ExcalidrawApp } from '@excalidraw/excalidraw';
+import { ExcalidrawApp } from '@jitsi/excalidraw';
 
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,13 +16,14 @@ import { getVerticalViewMaxWidth } from '../filmstrip/functions.web';
 // @ts-ignore
 import { getToolboxHeight } from '../toolbox/functions.web';
 // @ts-ignore
-import { getCollabLink, getCollabServerUrl, getUsernameStatus, shouldDisplayWhiteboard } from './functions';
+import { getCollabLink, getCollabServerUrl, getUsernameStatus, isWhiteboardVisible } from './functions';
 // @ts-ignore
 import { shouldDisplayTileView } from '../video-layout/functions.any';
 
 import { setUsernameStatus } from './actions';
 // @ts-ignore
 import { getLocalParticipant } from '../base/participants';
+import { USERNAME_UPDATE_STATUS } from './constants';
 
 const HEIGHT_OFFSET = 80;
 
@@ -47,7 +48,7 @@ const Whiteboard: () => JSX.Element = () => {
     const collabAPIRef = useRef<any>(null);
     const dispatch = useDispatch();
 
-    const shouldDisplay = useSelector(shouldDisplayWhiteboard);
+    const shouldDisplay = useSelector(isWhiteboardVisible);
     const isInTileView = useSelector(shouldDisplayTileView);
     const { clientHeight, clientWidth } = useSelector((state: any) => state['features/base/responsive-ui']);
     const { visible: filmstripVisible, isResizing } = useSelector((state: any) => state['features/filmstrip']);
@@ -64,7 +65,7 @@ const Whiteboard: () => JSX.Element = () => {
         }
 
         collabAPIRef.current.setUsername(localParticipantName);
-        dispatch(setUsernameStatus('UPDATED'));
+        dispatch(setUsernameStatus(USERNAME_UPDATE_STATUS.UPDATED));
     }, [ usernameStatus ]);
 
     /**
@@ -126,7 +127,7 @@ const Whiteboard: () => JSX.Element = () => {
                                 isCollaborating: true,
                                 // @ts-ignore
                                 ref: excalidrawRef,
-                                theme: 'dark'
+                                theme: 'light'
                             }}
                             getCollabAPI = { getCollabAPI } />
                     </div>

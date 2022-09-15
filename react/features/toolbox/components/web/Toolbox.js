@@ -74,7 +74,8 @@ import {
 import { VideoQualityDialog, VideoQualityButton } from '../../../video-quality/components';
 import { VideoBackgroundButton, toggleBackgroundEffect } from '../../../virtual-background';
 import { VIRTUAL_BACKGROUND_TYPE } from '../../../virtual-background/constants';
-import WhiteboardButton from '../../../whiteboard/components/WhiteboardButton';
+import WhiteboardButton from '../../../whiteboard/components/web/WhiteboardButton';
+import { isWhiteboardEnabled } from '../../../whiteboard/functions';
 import {
     setFullScreen,
     setOverflowMenuVisible,
@@ -265,6 +266,11 @@ type Props = {
      * Returns the selected virtual source object.
      */
     _virtualSource: Object,
+
+    /**
+     * Whether the whiteboard is enabled.
+     */
+    _whiteboardEnabled: boolean,
 
     /**
      * An object containing the CSS classes.
@@ -639,7 +645,8 @@ class Toolbox extends Component<Props> {
             _isMobile,
             _hasSalesforce,
             _multiStreamModeEnabled,
-            _screenSharing
+            _screenSharing,
+            _whiteboardEnabled
         } = this.props;
 
         const microphone = {
@@ -770,7 +777,7 @@ class Toolbox extends Component<Props> {
         };
 
 
-        const whiteboard = {
+        const whiteboard = _whiteboardEnabled && {
             key: 'whiteboard',
             Content: WhiteboardButton,
             group: 3
@@ -1478,7 +1485,8 @@ function _mapStateToProps(state, ownProps) {
         _tileViewEnabled: shouldDisplayTileView(state),
         _toolbarButtons: toolbarButtons,
         _virtualSource: state['features/virtual-background'].virtualSource,
-        _visible: isToolboxVisible(state)
+        _visible: isToolboxVisible(state),
+        _whiteboardEnabled: isWhiteboardEnabled(state)
     };
 }
 
