@@ -158,6 +158,11 @@ export interface IWatchRTCConfiguration {
     wsUrl?: string;
 }
 
+export interface IObservability {
+    apiKey?: string;
+    collectorUrl?: string;
+}
+
 export interface IConfig {
     _desktopSharingSourceDevice?: string;
     _immediateReloadThreshold?: string;
@@ -248,6 +253,7 @@ export interface IConfig {
         environment?: string;
         product?: string;
         region?: string;
+        releaseNumber?: string;
         shard?: string;
         userRegion?: string;
     };
@@ -454,6 +460,7 @@ export interface IConfig {
         short?: number;
     };
     notifications?: Array<string>;
+    observability?: IObservability;
     openSharedDocumentOnJoin?: boolean;
     opusMaxAverageBitrate?: number;
     p2p?: {

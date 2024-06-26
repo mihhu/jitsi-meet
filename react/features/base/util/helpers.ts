@@ -181,3 +181,23 @@ export function objectSort(object: Object, callback: Function) {
                 [key]: value };
         }, {});
 }
+
+/**
+ * Extract application name based on React component.
+ *
+ * @param {React.FunctionComponent} Component - The React Component.
+ * @returns {string}
+ */
+export const getAppName = (Component: React.FunctionComponent) => {
+    switch (Component.name) {
+    case 'PrejoinApp':
+        return 'jitsi-prejoin';
+    case 'DialInSummaryApp':
+        return 'jitsi-dialin';
+    case 'WhiteboardApp':
+        return 'jitsi-whiteboard';
+    case 'App':
+    default:
+        return 'jitsi-meet';
+    }
+};

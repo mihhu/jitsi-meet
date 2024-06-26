@@ -4,10 +4,11 @@ import ReactDOM from 'react-dom';
 import { App } from './features/app/components/App.web';
 import { getLogger } from './features/base/logging/functions';
 import Platform from './features/base/react/Platform.web';
-import { getJitsiMeetGlobalNS } from './features/base/util/helpers';
+import { getAppName, getJitsiMeetGlobalNS } from './features/base/util/helpers';
 import DialInSummaryApp from './features/invite/components/dial-in-summary/web/DialInSummaryApp';
 import PrejoinApp from './features/prejoin/components/web/PrejoinApp';
 import WhiteboardApp from './features/whiteboard/components/web/WhiteboardApp';
+import { initFaro } from './observability';
 
 const logger = getLogger('index.web');
 
@@ -70,6 +71,8 @@ globalNS.renderEntryPoint = ({
     props = {},
     elementId = 'react'
 }) => {
+    initFaro(getAppName(Component));
+
     ReactDOM.render(
         <Component { ...props } />,
         document.getElementById(elementId)
