@@ -21,6 +21,7 @@ import '../talk-while-muted/middleware';
 import '../toolbox/middleware';
 import '../face-landmarks/middleware';
 import '../gifs/middleware';
+import '../visitors/middleware.web';
 import '../whiteboard/middleware.web';
 
 import './middlewares.any';

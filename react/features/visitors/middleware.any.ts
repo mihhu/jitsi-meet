@@ -34,6 +34,8 @@ import {
 } from './actions';
 import { getPromotionRequests } from './functions';
 import logger from './logger';
+import { JoinMeetingDialog } from './components';
+import { openDialog } from '../base/dialog/actions';
 
 MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
     switch (action.type) {
@@ -53,6 +55,8 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
         const { conference } = action;
 
         if (getState()['features/visitors'].iAmVisitor) {
+            dispatch(openDialog(JoinMeetingDialog));
+            
             const { demoteActorDisplayName } = getState()['features/visitors'];
 
             dispatch(setVisitorDemoteActor(undefined));

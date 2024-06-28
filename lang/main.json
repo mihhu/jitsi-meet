@@ -263,6 +263,7 @@
         "Remove": "Remove",
         "Share": "Share",
         "Submit": "Submit",
+        "Understood": "Understood",
         "WaitForHostMsg": "The conference has not yet started because no moderators have yet arrived. If you'd like to become a moderator please log-in. Otherwise, please wait.",
         "WaitForHostNoAuthMsg": "The conference has not yet started because no moderators have yet arrived. Please wait.",
         "WaitingForHostButton": "Wait for moderator",
@@ -1495,6 +1496,12 @@
             "noVisitorLobby": "You cannot join while there is a lobby enabled for the meeting.",
             "notAllowedPromotion": "A participant needs to allow your request first.",
             "title": "You are a visitor in the meeting"
+        },
+        "joinMeeting": {
+            "title": "Joining meeting",
+            "description": "You're currently an observer in this conference.",
+            "raiseHand": "Raise your hand",
+            "wishToSpeak": "If you wish to speak, please raise your hand below and wait for the moderator's approval."
         }
     },
     "volumeSlider": "Volume slider",
